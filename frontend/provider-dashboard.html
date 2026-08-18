@@ -125,45 +125,171 @@
     <div id="workerDetail"></div>
   </section>
 
-  <!-- ADD CONSULTATION -->
+  <!-- DOCTORS VISIT RECORD -->
   <section id="section-add-consultation" class="dash-section">
-    <div class="section-header-row"><h2>📋 Add Consultation</h2></div>
-    <div class="card">
-      <div class="card-header"><h3>New Consultation Record</h3><div class="demo-badge">⚠️ Demo</div></div>
-      <form id="consultForm" class="profile-form">
-        <div class="form-group">
-          <label>Select Worker</label>
-          <select id="consultWorker" required>
-            <option value="">-- Select Worker --</option>
-          </select>
-        </div>
+    <div class="section-header-row">
+      <h2>📋 Doctors Visit Record</h2>
+      <div class="demo-badge">👨‍⚕️ Doctor Entry Only</div>
+    </div>
+    <div class="card" style="border: 2px solid #38bdf8; background: #0f172a;">
+      <div class="card-header" style="background: linear-gradient(135deg, #1e3a8a, #0284c7); padding: 18px; border-radius: 12px 12px 0 0;">
+        <h3 style="color: #ffffff; font-size: 1.4rem; text-align: center; margin: 0; text-transform: uppercase; letter-spacing: 1px;">🏥 Doctors Visit Record</h3>
+        <p style="text-align: center; color: #e0f2fe; font-size: 0.82rem; margin: 4px 0 0 0;">Official medical record filled by healthcare providers. Will be stored securely &amp; displayed on Emergency QR scan.</p>
+      </div>
+
+      <form id="consultForm" class="profile-form" style="padding: 24px;">
         <div class="form-row">
           <div class="form-group">
-            <label>Visit Date</label>
-            <input type="date" id="consultDate" required />
+            <label style="color:#38bdf8; font-weight:700">Select Patient / Worker</label>
+            <select id="consultWorker" required style="border-color:#38bdf8; font-weight:600">
+              <option value="">-- Select Patient --</option>
+            </select>
           </div>
           <div class="form-group">
-            <label>Hospital / Clinic</label>
-            <input type="text" id="consultHospital" placeholder="City Care Hospital, Kochi" />
+            <label style="color:#38bdf8; font-weight:700">Date of Visit</label>
+            <input type="date" id="consultDate" required />
           </div>
         </div>
-        <div class="form-group">
-          <label>Diagnosis</label>
-          <input type="text" id="consultDiag" placeholder="e.g. Viral fever, Allergy" required />
+
+        <!-- SECTION: PATIENT INFO & ALTERNATE CONTACT -->
+        <div style="border-top: 1px solid #334155; margin-top: 16px; padding-top: 16px;">
+          <h4 style="color:#60a5fa; margin-bottom: 12px; font-size: 1rem;">👤 Patient Info &amp; Alternate Contact</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Pregnant</label>
+              <select id="consultPregnant">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Nursing</label>
+              <select id="consultNursing">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone (Mobile)</label>
+              <input type="tel" id="consultPhoneMobile" placeholder="Patient's Mobile Phone" />
+            </div>
+            <div class="form-group">
+              <label>Phone (Home)</label>
+              <input type="tel" id="consultPhoneHome" placeholder="Home Phone" />
+            </div>
+            <div class="form-group">
+              <label>Phone (Work)</label>
+              <input type="tel" id="consultPhoneWork" placeholder="Work Phone" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Patient Address</label>
+            <input type="text" id="consultPatientAddress" placeholder="Full Address" />
+          </div>
+
+          <div style="background: rgba(30, 41, 59, 0.7); padding: 14px; border-radius: 10px; margin-top: 12px; border: 1px solid #334155;">
+            <h5 style="color:#93c5fd; margin: 0 0 10px 0; font-size: 0.9rem;">👥 Alternate Contact</h5>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="consultAltName" placeholder="Alternate Contact Name" />
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="consultAltPhone" placeholder="Alternate Contact Phone" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Address</label>
+              <input type="text" id="consultAltAddress" placeholder="Alternate Contact Address" />
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Symptoms</label>
-          <textarea id="consultSymptoms" rows="3" placeholder="Patient's reported symptoms..." required></textarea>
+
+        <!-- SECTION: CONCERNS / QUESTIONS -->
+        <div style="border-top: 1px solid #334155; margin-top: 16px; padding-top: 16px;">
+          <h4 style="color:#60a5fa; margin-bottom: 12px; font-size: 1rem;">❓ Concerns / Questions</h4>
+          <div class="form-group">
+            <textarea id="consultConcerns" rows="3" placeholder="Patient's reported concerns, symptoms or questions..." required></textarea>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Prescription / Treatment</label>
-          <textarea id="consultPrescription" rows="3" placeholder="Medicines and treatment given..."></textarea>
+
+        <!-- SECTION: APPOINTMENT DETAILS & NOTES -->
+        <div style="border-top: 1px solid #334155; margin-top: 16px; padding-top: 16px;">
+          <h4 style="color:#60a5fa; margin-bottom: 12px; font-size: 1rem;">🗓️ Appointment Details</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Appointment Date</label>
+              <input type="date" id="consultApptDate" />
+            </div>
+            <div class="form-group">
+              <label>Appointment Time</label>
+              <input type="time" id="consultApptTime" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Notes / Comments</label>
+            <textarea id="consultNotes" rows="2" placeholder="Appointment notes or doctor comments..."></textarea>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Clinical Notes</label>
-          <textarea id="consultNotes" rows="3" placeholder="Additional clinical observations..."></textarea>
+
+        <!-- SECTION: DOCTOR'S DETAILS & DIAGNOSIS -->
+        <div style="border-top: 1px solid #334155; margin-top: 16px; padding-top: 16px;">
+          <h4 style="color:#60a5fa; margin-bottom: 12px; font-size: 1rem;">👨‍⚕️ Doctor's Details &amp; Diagnosis</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Doctor's Name</label>
+              <input type="text" id="consultDocName" placeholder="Dr. Name" required />
+            </div>
+            <div class="form-group">
+              <label>Doctor's Phone</label>
+              <input type="tel" id="consultDocPhone" placeholder="Hospital / Doctor Phone" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Doctor's Address / Hospital</label>
+            <input type="text" id="consultDocAddress" placeholder="Hospital / Clinic Address" required />
+          </div>
+          <div class="form-group">
+            <label>Diagnosis / Advice</label>
+            <textarea id="consultDiagnosis" rows="3" placeholder="Diagnosis, clinical advice &amp; treatment plan..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Prescription (Rx)</label>
+            <textarea id="consultPrescription" rows="2" placeholder="Prescribed medications &amp; dosage instructions..."></textarea>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary">✅ Save Consultation Record</button>
+
+        <!-- SECTION: INSURANCE DETAILS -->
+        <div style="border-top: 1px solid #334155; margin-top: 16px; padding-top: 16px;">
+          <h4 style="color:#60a5fa; margin-bottom: 12px; font-size: 1rem;">🛡️ Insurance Details</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Insurance Name / Provider</label>
+              <input type="text" id="consultInsName" placeholder="e.g. Star Health, Ayushman Bharat" />
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" id="consultInsPhone" placeholder="Insurance Helpline" />
+            </div>
+            <div class="form-group">
+              <label>ID Number</label>
+              <input type="text" id="consultInsId" placeholder="Policy / ID Number" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="consultInsAddress" placeholder="Insurance Branch Address" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:24px; padding:14px; font-size:1.1rem; background: linear-gradient(135deg, #0284c7, #2563eb);">
+          💾 Save Doctor's Visit Record to Patient QR Profile
+        </button>
       </form>
       <div id="consultMsg" style="display:none;" class="success-msg"></div>
     </div>
@@ -477,25 +603,49 @@ function switchDTab(id, el) {
 document.getElementById('consultForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const workerId = document.getElementById('consultWorker').value;
-  if (!workerId) { alert('Please select a worker'); return; }
+  if (!workerId) { alert('Please select a patient / worker'); return; }
+  
   const body = {
     visitDate: document.getElementById('consultDate').value,
-    hospital: document.getElementById('consultHospital').value,
-    diagnosis: document.getElementById('consultDiag').value,
-    symptoms: document.getElementById('consultSymptoms').value,
-    prescription: document.getElementById('consultPrescription').value,
+    pregnant: document.getElementById('consultPregnant').value,
+    nursing: document.getElementById('consultNursing').value,
+    phoneMobile: document.getElementById('consultPhoneMobile').value,
+    phoneHome: document.getElementById('consultPhoneHome').value,
+    phoneWork: document.getElementById('consultPhoneWork').value,
+    patientAddress: document.getElementById('consultPatientAddress').value,
+    altContactName: document.getElementById('consultAltName').value,
+    altContactPhone: document.getElementById('consultAltPhone').value,
+    altContactAddress: document.getElementById('consultAltAddress').value,
+    concerns: document.getElementById('consultConcerns').value,
+    appointmentDate: document.getElementById('consultApptDate').value,
+    appointmentTime: document.getElementById('consultApptTime').value,
     notes: document.getElementById('consultNotes').value,
+    doctorName: document.getElementById('consultDocName').value,
+    doctorPhone: document.getElementById('consultDocPhone').value,
+    doctorAddress: document.getElementById('consultDocAddress').value,
+    hospital: document.getElementById('consultDocAddress').value,
+    diagnosis: document.getElementById('consultDiagnosis').value,
+    prescription: document.getElementById('consultPrescription').value,
+    insuranceName: document.getElementById('consultInsName').value,
+    insurancePhone: document.getElementById('consultInsPhone').value,
+    insuranceId: document.getElementById('consultInsId').value,
+    insuranceAddress: document.getElementById('consultInsAddress').value,
   };
+
   try {
-    const res = await fetch(`${API_BASE}/workers/${workerId}/visits`, { method: 'POST', headers: authHeaders, body: JSON.stringify(body) });
+    const res = await fetch(`${API_BASE}/workers/${workerId}/visits`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify(body)
+    });
     if (res.ok) {
       const msg = document.getElementById('consultMsg');
-      msg.textContent = '✅ Consultation record saved and added to worker\'s health record!';
+      msg.textContent = '✅ Doctor\'s Visit Record saved successfully! Accessible via Patient Emergency QR Scan.';
       msg.style.display = 'block';
       document.getElementById('consultForm').reset();
-      setTimeout(() => msg.style.display = 'none', 4000);
+      setTimeout(() => msg.style.display = 'none', 5000);
     }
-  } catch (e) { alert('Error: ' + e.message); }
+  } catch (e) { alert('Error saving Doctor\'s Visit Record: ' + e.message); }
 });
 
 document.getElementById('reportForm').addEventListener('submit', async (e) => {

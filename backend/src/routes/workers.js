@@ -152,30 +152,72 @@ router.get('/:id/visits', authenticate, async (req, res) => {
   }
 });
 
-// POST /api/workers/:id/visits - Add medical visit
+// POST /api/workers/:id/visits - Add Doctors Visit Record
 router.post('/:id/visits', authenticate, authorize('HEALTHCARE_PROVIDER', 'ADMIN'), async (req, res) => {
   try {
     const { id } = req.params;
-    const { hospital, doctorName, diagnosis, symptoms, prescription, notes, visitDate } = req.body;
+    const {
+      hospital,
+      doctorName,
+      doctorPhone,
+      doctorAddress,
+      diagnosis,
+      symptoms,
+      prescription,
+      notes,
+      visitDate,
+      pregnant,
+      nursing,
+      phoneMobile,
+      phoneHome,
+      phoneWork,
+      patientAddress,
+      altContactName,
+      altContactPhone,
+      altContactAddress,
+      concerns,
+      appointmentDate,
+      appointmentTime,
+      insuranceName,
+      insurancePhone,
+      insuranceId,
+      insuranceAddress
+    } = req.body;
 
     const provider = await prisma.healthcareProvider.findUnique({ where: { userId: req.user.id } });
+
+    const doctorVisitData = {
+      isDoctorVisitRecord: true,
+      pregnant: pregnant || 'No',
+      nursing: nursing || 'No',
+      phoneMobile: phoneMobile || '',
+      phoneHome: phoneHome || '',
+      phoneWork: phoneWork || '',
+      patientAddress: patientAddress || '',
+      altContact: { name: altContactName || '', phone: altContactPhone || '', address: altContactAddress || '' },
+      concerns: concerns || symptoms || '',
+      appointmentDetails: { date: appointmentDate || visitDate || '', time: appointmentTime || '', notes: notes || '' },
+      doctorDetails: { name: doctorName || provider?.name || 'Dr. Medical Officer', phone: doctorPhone || provider?.phone || '', address: doctorAddress || hospital || provider?.hospital || '' },
+      insuranceDetails: { name: insuranceName || '', phone: insurancePhone || '', idNumber: insuranceId || '', address: insuranceAddress || '' },
+      diagnosisAdvice: diagnosis || 'General Consultation'
+    };
 
     const visit = await prisma.medicalVisit.create({
       data: {
         workerId: id,
         providerId: provider?.id,
         visitDate: visitDate ? new Date(visitDate) : new Date(),
-        hospital: hospital || provider?.hospital || 'Unknown',
-        doctorName: doctorName || provider?.name || 'Unknown',
-        diagnosis,
-        symptoms,
-        prescription,
-        notes,
+        hospital: hospital || doctorAddress || provider?.hospital || 'Healthcare Centre',
+        doctorName: doctorName || provider?.name || 'Medical Officer',
+        diagnosis: diagnosis || 'Doctor Consultation',
+        symptoms: concerns || symptoms || 'Routine Checkup',
+        prescription: prescription || '',
+        notes: JSON.stringify(doctorVisitData),
       },
     });
 
     await logAudit(req.user.id, 'CONSULTATION_ADDED', 'MedicalVisit', visit.id,
-      `Consultation added for worker ${id}: ${diagnosis}`, req.ip);
+      `Doctors Visit Record added for worker ${id}: ${diagnosis}`, req.ip);
 
     res.status(201).json({ success: true, visit });
   } catch (err) {

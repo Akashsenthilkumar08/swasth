@@ -292,22 +292,100 @@
           document.getElementById('ecCallBtn').href = `tel:${data.emergencyContact.phone}`;
         }
 
-        // Visits
+        // Render Doctors Visit Records
         const visitsEl = document.getElementById('visitsContainer');
         if (!data.medicalVisits || !data.medicalVisits.length) {
-          visitsEl.innerHTML = '<div class="em-card" style="color:#94a3b8; font-size:0.88rem">No prior hospital visits recorded.</div>';
+          visitsEl.innerHTML = '<div class="em-card" style="color:#94a3b8; font-size:0.88rem">No prior Doctors Visit Records found.</div>';
         } else {
-          visitsEl.innerHTML = data.medicalVisits.map(v => `
-            <div class="em-card">
-              <div class="em-visit-header">
-                <div class="em-visit-diag">🏥 ${v.diagnosis || 'General Checkup'}</div>
-                <div class="em-visit-date">${new Date(v.visitDate).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</div>
+          visitsEl.innerHTML = data.medicalVisits.map(v => {
+            let docRecord = {};
+            try {
+              if (v.notes && v.notes.startsWith('{')) {
+                docRecord = JSON.parse(v.notes);
+              }
+            } catch (e) {}
+
+            const visitDateStr = new Date(v.visitDate).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+            
+            return `
+              <div class="em-card" style="border: 2px solid #38bdf8; background: #0f172a; padding: 0; overflow: hidden; margin-bottom: 20px;">
+                <!-- BLUE HEADER -->
+                <div style="background: linear-gradient(135deg, #1e3a8a, #0284c7); padding: 14px 18px; color: white;">
+                  <div style="font-size: 1.2rem; font-weight: 800; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Doctors Visit Record</div>
+                  <div style="font-size: 0.8rem; text-align: center; color: #bae6fd; margin-top: 2px;">Date: <strong>${visitDateStr}</strong></div>
+                </div>
+
+                <div style="padding: 16px; font-size: 0.88rem; color: #e2e8f0;">
+                  <!-- PATIENT INFO TABLE -->
+                  <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #38bdf8; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 4px;">👤 Patient Info</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <div><strong>Name:</strong> ${data.name || 'Patient'}</div>
+                      <div><strong>Age:</strong> ${data.age || 'N/A'}</div>
+                      <div><strong>Pregnant:</strong> ${docRecord.pregnant || 'No'}</div>
+                      <div><strong>Nursing:</strong> ${docRecord.nursing || 'No'}</div>
+                      <div><strong>Mobile:</strong> ${docRecord.phoneMobile || data.phone || 'N/A'}</div>
+                      <div><strong>Home Phone:</strong> ${docRecord.phoneHome || 'N/A'}</div>
+                      <div><strong>Work Phone:</strong> ${docRecord.phoneWork || 'N/A'}</div>
+                    </div>
+                    <div style="margin-top: 6px;"><strong>Address:</strong> ${docRecord.patientAddress || data.currentLocation || 'N/A'}</div>
+                  </div>
+
+                  <!-- ALTERNATE CONTACT -->
+                  ${(docRecord.altContact?.name || data.emergencyContact?.name) ? `
+                  <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #60a5fa; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px;">👥 Alternate Contact</div>
+                    <div><strong>Name:</strong> ${docRecord.altContact?.name || data.emergencyContact?.name || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${docRecord.altContact?.phone || data.emergencyContact?.phone || 'N/A'}</div>
+                    <div><strong>Address:</strong> ${docRecord.altContact?.address || data.emergencyContact?.relationship || 'N/A'}</div>
+                  </div>
+                  ` : ''}
+
+                  <!-- CONCERNS / QUESTIONS -->
+                  <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #fbbf24; font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">❓ Concerns / Questions</div>
+                    <div style="color: #fef08a;">${docRecord.concerns || v.symptoms || 'None recorded'}</div>
+                  </div>
+
+                  <!-- APPOINTMENT DETAILS -->
+                  <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #60a5fa; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px;">🗓️ Appointment Details</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <div><strong>Date:</strong> ${docRecord.appointmentDetails?.date || visitDateStr}</div>
+                      <div><strong>Time:</strong> ${docRecord.appointmentDetails?.time || 'Scheduled'}</div>
+                    </div>
+                    ${(docRecord.appointmentDetails?.notes || (v.notes && !v.notes.startsWith('{') ? v.notes : '')) ? `<div style="margin-top:6px; color:#cbd5e1"><strong>Notes / Comments:</strong> ${docRecord.appointmentDetails?.notes || v.notes}</div>` : ''}
+                  </div>
+
+                  <!-- DOCTOR'S DETAILS & DIAGNOSIS -->
+                  <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="color: #34d399; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;">👨‍⚕️ Doctor's Details</div>
+                    <div><strong>Doctor Name:</strong> ${docRecord.doctorDetails?.name || v.doctorName || 'Medical Officer'}</div>
+                    <div><strong>Phone:</strong> ${docRecord.doctorDetails?.phone || 'Healthcare Centre'}</div>
+                    <div><strong>Address / Hospital:</strong> ${docRecord.doctorDetails?.address || v.hospital || 'Hospital'}</div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(16, 185, 129, 0.3);">
+                      <div style="color: #6ee7b7; font-weight: 700;">Diagnosis / Advice:</div>
+                      <div style="font-size: 0.95rem; font-weight: 600; color: #ffffff; margin-top: 2px;">${v.diagnosis || docRecord.diagnosisAdvice}</div>
+                    </div>
+                    ${v.prescription ? `<div style="margin-top: 6px; color: #a7f3d0;"><strong>💊 Prescription:</strong> ${v.prescription}</div>` : ''}
+                  </div>
+
+                  <!-- INSURANCE DETAILS -->
+                  ${(docRecord.insuranceDetails?.name || docRecord.insuranceDetails?.idNumber) ? `
+                  <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 8px; padding: 12px;">
+                    <div style="color: #93c5fd; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px;">🛡️ Insurance Details</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <div><strong>Provider:</strong> ${docRecord.insuranceDetails.name}</div>
+                      <div><strong>ID Number:</strong> ${docRecord.insuranceDetails.idNumber}</div>
+                      <div><strong>Phone:</strong> ${docRecord.insuranceDetails.phone || 'N/A'}</div>
+                      <div><strong>Address:</strong> ${docRecord.insuranceDetails.address || 'N/A'}</div>
+                    </div>
+                  </div>
+                  ` : ''}
+                </div>
               </div>
-              <div class="em-visit-hospital">${v.hospital || 'Medical Centre'} ${v.provider?.name ? '· Dr. ' + v.provider.name : ''}</div>
-              ${v.treatmentNotes || v.notes ? `<div class="em-visit-notes"><strong>Doctor Notes:</strong> ${v.treatmentNotes || v.notes}</div>` : ''}
-              ${v.prescription ? `<div style="font-size:0.82rem; margin-top:6px; color:#a7f3d0"><strong>💊 Rx:</strong> ${v.prescription}</div>` : ''}
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
 
         // Documents & Reports
