@@ -427,6 +427,7 @@
         <div class="ec-body">
           <div class="ec-qr">
             <canvas id="qrCanvas"></canvas>
+            <img id="qrImage" style="display:none; width:160px; height:160px; border-radius:4px" alt="Emergency QR Code"/>
           </div>
           <div class="ec-info">
             <div class="ec-field">
@@ -679,6 +680,7 @@ function showSection(name, el) {
   const titles = { overview: 'Dashboard Overview', 'health-record': 'Health Record', chatbot: 'AI Assistant', nearby: 'Nearby Healthcare', reminders: 'Medicine Reminders', 'qr-card': 'Emergency QR', documents: 'Health Documents', profile: 'My Profile' };
   document.getElementById('pageTitle').textContent = titles[name] || name;
   if (name === 'documents') loadDocuments();
+  if (name === 'qr-card') generateQRCard();
 }
 
 function toggleSidebar() {
@@ -1271,11 +1273,22 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
 function generateQRCard() {
   const canvas = document.getElementById('qrCanvas');
-  if (!canvas || !workerId) return;
-  const qrData = `${window.location.origin}/emergency.html?id=${workerId}`;
-  if (typeof QRCode !== 'undefined') {
+  const img = document.getElementById('qrImage');
+  const targetId = workerId || userProfile?.id || 'c7a30364-58bc-45f8-8bb2-3df6edcbf345';
+  const qrData = `${window.location.origin}/emergency.html?id=${targetId}`;
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrData)}`;
+
+  if (img) {
+    img.src = qrApiUrl;
+    img.style.display = 'block';
+  }
+
+  if (canvas && typeof QRCode !== 'undefined') {
     QRCode.toCanvas(canvas, qrData, { width: 160, margin: 2, color: { dark: '#0f172a', light: '#ffffff' } }, err => {
-      if (err) console.error(err);
+      if (!err && img) {
+        img.style.display = 'none';
+        canvas.style.display = 'block';
+      }
     });
   }
 }
