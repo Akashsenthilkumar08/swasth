@@ -697,14 +697,17 @@ document.getElementById('timeGreeting').textContent = hour < 12 ? 'morning' : ho
 
 // INIT
 async function initDashboard() {
+  if (userProfile && userProfile.name) {
+    updateProfileUI(userProfile);
+  }
   try {
     const res = await fetch(`${API_BASE}/workers/me`, { headers: authHeaders });
     const data = await res.json();
     if (res.ok) {
-      userProfile = data;
+      userProfile = { ...userProfile, ...data };
       workerId = data.id;
-      localStorage.setItem('cc_profile', JSON.stringify(data));
-      updateProfileUI(data);
+      localStorage.setItem('cc_profile', JSON.stringify(userProfile));
+      updateProfileUI(userProfile);
     }
   } catch (e) { console.error(e); }
 
@@ -1224,9 +1227,11 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
   e.preventDefault();
   const rawAllergies = document.getElementById('pfAllergies').value;
   const allergiesArr = rawAllergies.split(',').map(a => a.trim()).filter(Boolean);
-  const body = {
+  
+  const updatedData = {
+    ...userProfile,
     name: document.getElementById('pfName').value,
-    age: document.getElementById('pfAge').value,
+    age: parseInt(document.getElementById('pfAge').value) || userProfile.age,
     gender: document.getElementById('pfGender')?.value || 'Male',
     phone: document.getElementById('pfPhone').value,
     currentLocation: document.getElementById('pfLocation').value,
@@ -1234,16 +1239,34 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
     bloodGroup: document.getElementById('pfBlood').value,
     allergies: JSON.stringify(allergiesArr),
   };
+
+  userProfile = updatedData;
+  localStorage.setItem('cc_profile', JSON.stringify(updatedData));
+  updateProfileUI(updatedData);
+  generateQRCard();
+
+  const msg = document.getElementById('profileSaveMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 3000);
+
   try {
-    const res = await fetch(`${API_BASE}/workers/${workerId}/profile`, { method: 'PUT', headers: authHeaders, body: JSON.stringify(body) });
+    const res = await fetch(`${API_BASE}/workers/${workerId}/profile`, {
+      method: 'PUT',
+      headers: authHeaders,
+      body: JSON.stringify(updatedData)
+    });
     if (res.ok) {
-      const msg = document.getElementById('profileSaveMsg');
-      msg.style.display = 'block';
-      setTimeout(() => msg.style.display = 'none', 3000);
-      await initDashboard();
-      generateQRCard();
+      const data = await res.json();
+      if (data.worker) {
+        userProfile = data.worker;
+        localStorage.setItem('cc_profile', JSON.stringify(data.worker));
+        updateProfileUI(data.worker);
+        generateQRCard();
+      }
     }
-  } catch (e) { alert('Error saving profile'); }
+  } catch (e) {
+    console.warn('Backend sync failed, using local profile state:', e);
+  }
 });
 
 function generateQRCard() {
