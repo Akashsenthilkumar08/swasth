@@ -81,11 +81,21 @@ router.put('/:id/profile', authenticate, authorize('MIGRANT_WORKER', 'ADMIN'), a
       if (!worker || worker.id !== id) return res.status(403).json({ error: 'Access denied' });
     }
 
-    const { name, age, phone, currentLocation, occupation } = req.body;
+    const { name, age, gender, phone, currentLocation, occupation, bloodGroup, allergies } = req.body;
+
+    const updateData = { updatedAt: new Date() };
+    if (name !== undefined) updateData.name = name;
+    if (age !== undefined) updateData.age = parseInt(age);
+    if (gender !== undefined) updateData.gender = gender;
+    if (phone !== undefined) updateData.phone = phone;
+    if (currentLocation !== undefined) updateData.currentLocation = currentLocation;
+    if (occupation !== undefined) updateData.occupation = occupation;
+    if (bloodGroup !== undefined) updateData.bloodGroup = bloodGroup;
+    if (allergies !== undefined) updateData.allergies = typeof allergies === 'string' ? allergies : JSON.stringify(allergies);
 
     const updated = await prisma.migrantWorker.update({
       where: { id },
-      data: { name, age: parseInt(age), phone, currentLocation, occupation, updatedAt: new Date() },
+      data: updateData,
     });
 
     await logAudit(req.user.id, 'PROFILE_UPDATED', 'MigrantWorker', id, 'Profile information updated');
@@ -108,20 +118,20 @@ router.get('/:id/health-record', authenticate, async (req, res) => {
     const [worker, visits, vaccinations, medications, labReports] = await Promise.all([
       prisma.migrantWorker.findUnique({ where: { id }, include: { emergencyContact: true } }),
       prisma.medicalVisit.findMany({ where: { workerId: id }, orderBy: { visitDate: 'desc' } }),
-      prisma.vaccination.findMany({ where: { workerId: id }, orderBy: { vaccinationDate: 'desc' } }),
+      prisma.vaccination.findMany({ where: { workerId: id }, orderBy: { dateAdministered: 'desc' } }),
       prisma.medication.findMany({ where: { workerId: id }, orderBy: { startDate: 'desc' } }),
-      prisma.labReport.findMany({ where: { workerId: id }, orderBy: { testDate: 'desc' } }),
+      prisma.labReport.findMany({ where: { workerId: id }, orderBy: { reportDate: 'desc' } }),
     ]);
 
     if (!worker) return res.status(404).json({ error: 'Worker not found' });
 
-    if (req.user.role === 'HEALTHCARE_PROVIDER') {
-      const provider = await prisma.healthcareProvider.findUnique({ where: { userId: req.user.id } });
-      await logAudit(req.user.id, 'HEALTH_RECORD_VIEWED', 'HealthRecord', id,
-        `${provider?.name || 'Provider'} viewed full health record`, req.ip);
-    }
-
-    res.json({ worker, visits, vaccinations, medications, labReports });
+    res.json({
+      worker,
+      visits,
+      vaccinations,
+      medications,
+      labReports,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -133,6 +143,7 @@ router.get('/:id/visits', authenticate, async (req, res) => {
     const { id } = req.params;
     const visits = await prisma.medicalVisit.findMany({
       where: { workerId: id },
+      include: { provider: true },
       orderBy: { visitDate: 'desc' },
     });
     res.json(visits);
@@ -178,7 +189,7 @@ router.get('/:id/vaccinations', authenticate, async (req, res) => {
     const { id } = req.params;
     const vaccinations = await prisma.vaccination.findMany({
       where: { workerId: id },
-      orderBy: { vaccinationDate: 'desc' },
+      orderBy: { dateAdministered: 'desc' },
     });
     res.json(vaccinations);
   } catch (err) {
@@ -200,14 +211,37 @@ router.get('/:id/medications', authenticate, async (req, res) => {
   }
 });
 
-// GET /api/workers/:id/emergency - Emergency QR data (limited)
+// GET /api/workers/:id/emergency - Emergency QR data
 router.get('/:id/emergency', async (req, res) => {
   try {
     const { id } = req.params;
-    const worker = await prisma.migrantWorker.findUnique({
-      where: { id },
-      include: { emergencyContact: true },
-    });
+    const [worker, visits, vaccinations, medications, labReports, healthDocuments] = await Promise.all([
+      prisma.migrantWorker.findUnique({
+        where: { id },
+        include: { emergencyContact: true },
+      }),
+      prisma.medicalVisit.findMany({
+        where: { workerId: id },
+        include: { provider: true },
+        orderBy: { visitDate: 'desc' },
+      }),
+      prisma.vaccination.findMany({
+        where: { workerId: id },
+        orderBy: { dateAdministered: 'desc' },
+      }),
+      prisma.medication.findMany({
+        where: { workerId: id },
+        orderBy: { startDate: 'desc' },
+      }),
+      prisma.labReport.findMany({
+        where: { workerId: id },
+        orderBy: { reportDate: 'desc' },
+      }),
+      prisma.healthDocument.findMany({
+        where: { workerId: id },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
 
     if (!worker) return res.status(404).json({ error: 'Worker not found' });
 
@@ -218,13 +252,31 @@ router.get('/:id/emergency', async (req, res) => {
         `Emergency QR accessed for ${worker.name}`, req.ip);
     }
 
-    // Return ONLY limited emergency info
+    let parsedAllergies = [];
+    try {
+      parsedAllergies = typeof worker.allergies === 'string' ? JSON.parse(worker.allergies) : (worker.allergies || []);
+    } catch (e) {
+      parsedAllergies = [worker.allergies].filter(Boolean);
+    }
+
     res.json({
+      id: worker.id,
+      uniqueCode: worker.uniqueCode || worker.id.substring(0, 8).toUpperCase(),
       name: worker.name,
+      age: worker.age,
+      gender: worker.gender,
+      phone: worker.phone,
+      currentLocation: worker.currentLocation,
+      homeState: worker.homeState,
+      occupation: worker.occupation,
       bloodGroup: worker.bloodGroup,
-      allergies: JSON.parse(worker.allergies || '[]'),
+      allergies: parsedAllergies,
       emergencyContact: worker.emergencyContact,
-      importantNote: 'This is limited emergency information only.',
+      medicalVisits: visits,
+      vaccinations: vaccinations,
+      medications: medications,
+      labReports: labReports,
+      healthDocuments: healthDocuments,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -232,3 +284,4 @@ router.get('/:id/emergency', async (req, res) => {
 });
 
 module.exports = router;
+

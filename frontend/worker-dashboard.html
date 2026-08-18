@@ -458,19 +458,17 @@
       </div>
       <div class="qr-actions">
         <button class="btn btn-primary" onclick="window.print()">🖨️ Print Card</button>
+        <button class="btn btn-outline" onclick="window.open('emergency.html?id=' + workerId, '_blank')">🔗 Open Emergency Page</button>
         <button class="btn btn-outline" onclick="showSection('health-record', null)">📋 View Full Record</button>
         <div class="qr-info-box">
-          <h4>What does the QR code show?</h4>
+          <h4>What does the QR code show when scanned?</h4>
           <ul>
-            <li>✅ Your name</li>
-            <li>✅ Blood group</li>
-            <li>✅ Known allergies</li>
-            <li>✅ Emergency contact</li>
-            <li>❌ Full medical history (protected)</li>
-            <li>❌ Prescriptions (protected)</li>
-            <li>❌ Lab reports (protected)</li>
+            <li>✅ Patient Name, ID Code, Age &amp; Gender</li>
+            <li>✅ Blood Group &amp; Known Allergies</li>
+            <li>✅ Emergency Contact with Call Button</li>
+            <li>✅ Previous Consultation History &amp; Reports</li>
           </ul>
-          <p>Only authorized healthcare providers can access your full health record.</p>
+          <p>Scannable by any mobile phone browser in emergency situations.</p>
         </div>
       </div>
     </div>
@@ -513,9 +511,19 @@
           </div>
           <div class="form-row">
             <div class="form-group">
+              <label>Gender</label>
+              <select id="pfGender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label>Phone Number</label>
               <input type="tel" id="pfPhone" />
             </div>
+          </div>
+          <div class="form-row">
             <div class="form-group">
               <label>Current Location</label>
               <select id="pfLocation">
@@ -525,20 +533,20 @@
                 <option value="Thiruvananthapuram">Thiruvananthapuram</option>
               </select>
             </div>
+            <div class="form-group">
+              <label>Occupation</label>
+              <input type="text" id="pfOccupation" />
+            </div>
           </div>
-          <div class="form-group">
-            <label>Occupation</label>
-            <input type="text" id="pfOccupation" />
-          </div>
-          <div class="form-group">
-            <label>Blood Group</label>
-            <input type="text" id="pfBlood" disabled class="disabled-field" />
-            <small>Blood group changes require healthcare provider verification.</small>
-          </div>
-          <div class="form-group">
-            <label>Known Allergies</label>
-            <input type="text" id="pfAllergies" disabled class="disabled-field" />
-            <small>Allergy updates require healthcare provider verification.</small>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Blood Group</label>
+              <input type="text" id="pfBlood" placeholder="e.g. O+, A+, B-" />
+            </div>
+            <div class="form-group">
+              <label>Known Allergies</label>
+              <input type="text" id="pfAllergies" placeholder="e.g. Penicillin, Dust" />
+            </div>
           </div>
           <button type="submit" class="btn btn-primary">💾 Save Changes</button>
         </form>
@@ -726,16 +734,17 @@ function updateProfileUI(data) {
   document.getElementById('profileAvatarBig').textContent = initials;
   document.getElementById('profileNameBig').textContent = data.name;
   document.getElementById('profileLocationBig').textContent = data.currentLocation;
-  document.getElementById('pfName').value = data.name;
-  document.getElementById('pfAge').value = data.age;
-  document.getElementById('pfPhone').value = data.phone;
-  document.getElementById('pfLocation').value = data.currentLocation;
-  document.getElementById('pfOccupation').value = data.occupation;
-  document.getElementById('pfBlood').value = data.bloodGroup;
-  document.getElementById('pfAllergies').value = allergies.join(', ');
-  document.getElementById('ecName').textContent = data.name;
-  document.getElementById('ecBlood').textContent = data.bloodGroup;
-  document.getElementById('ecAllergies').textContent = allergies.join(', ');
+  document.getElementById('pfName').value = data.name || '';
+  document.getElementById('pfAge').value = data.age || '';
+  if (document.getElementById('pfGender')) document.getElementById('pfGender').value = data.gender || 'Male';
+  document.getElementById('pfPhone').value = data.phone || '';
+  document.getElementById('pfLocation').value = data.currentLocation || 'Kochi';
+  document.getElementById('pfOccupation').value = data.occupation || '';
+  document.getElementById('pfBlood').value = data.bloodGroup || '';
+  document.getElementById('pfAllergies').value = Array.isArray(allergies) ? allergies.join(', ') : (data.allergies || '');
+  document.getElementById('ecName').textContent = data.name || 'Worker';
+  document.getElementById('ecBlood').textContent = data.bloodGroup || 'Not specified';
+  document.getElementById('ecAllergies').textContent = Array.isArray(allergies) && allergies.length ? allergies.join(', ') : 'None';
   if (data.emergencyContact) {
     document.getElementById('ecContact').textContent = `${data.emergencyContact.name} (${data.emergencyContact.relationship})`;
     document.getElementById('ecPhone').textContent = data.emergencyContact.phone;
@@ -1213,12 +1222,17 @@ document.getElementById('reminderForm')?.addEventListener('submit', async (e) =>
 
 document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
+  const rawAllergies = document.getElementById('pfAllergies').value;
+  const allergiesArr = rawAllergies.split(',').map(a => a.trim()).filter(Boolean);
   const body = {
     name: document.getElementById('pfName').value,
     age: document.getElementById('pfAge').value,
+    gender: document.getElementById('pfGender')?.value || 'Male',
     phone: document.getElementById('pfPhone').value,
     currentLocation: document.getElementById('pfLocation').value,
     occupation: document.getElementById('pfOccupation').value,
+    bloodGroup: document.getElementById('pfBlood').value,
+    allergies: JSON.stringify(allergiesArr),
   };
   try {
     const res = await fetch(`${API_BASE}/workers/${workerId}/profile`, { method: 'PUT', headers: authHeaders, body: JSON.stringify(body) });
@@ -1227,6 +1241,7 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
       msg.style.display = 'block';
       setTimeout(() => msg.style.display = 'none', 3000);
       await initDashboard();
+      generateQRCard();
     }
   } catch (e) { alert('Error saving profile'); }
 });
@@ -1234,9 +1249,9 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 function generateQRCard() {
   const canvas = document.getElementById('qrCanvas');
   if (!canvas || !workerId) return;
-  const qrData = `${window.location.origin}/worker-dashboard.html?emergency=${workerId}`;
+  const qrData = `${window.location.origin}/emergency.html?id=${workerId}`;
   if (typeof QRCode !== 'undefined') {
-    QRCode.toCanvas(canvas, qrData, { width: 150, margin: 2, color: { dark: '#1a1a2e', light: '#ffffff' } }, err => {
+    QRCode.toCanvas(canvas, qrData, { width: 160, margin: 2, color: { dark: '#0f172a', light: '#ffffff' } }, err => {
       if (err) console.error(err);
     });
   }
