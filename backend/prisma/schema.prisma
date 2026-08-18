@@ -1,0 +1,211 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  role         String   @default("MIGRANT_WORKER") // MIGRANT_WORKER, HEALTHCARE_PROVIDER, ADMIN
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  migrantWorker      MigrantWorker?
+  healthcareProvider HealthcareProvider?
+  auditLogs          AuditLog[]
+}
+
+model MigrantWorker {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  name             String
+  age              Int
+  gender           String
+  phone            String
+  currentLocation  String
+  homeState        String
+  languages        String   // JSON array stored as string
+  bloodGroup       String
+  allergies        String   // JSON array stored as string
+  occupation       String
+  profilePhoto     String?
+  qrCode           String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User           @relation(fields: [userId], references: [id])
+  emergencyContact EmergencyContact?
+  medicalVisits    MedicalVisit[]
+  medications      Medication[]
+  vaccinations     Vaccination[]
+  labReports       LabReport[]
+  reminders        MedicineReminder[]
+  healthDocuments  HealthDocument[]
+}
+
+model HealthcareProvider {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  name         String
+  designation  String
+  hospital     String
+  location     String
+  licenseNo    String
+  phone        String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id])
+  medicalVisits MedicalVisit[]
+  labReports    LabReport[]
+}
+
+model EmergencyContact {
+  id             String   @id @default(uuid())
+  workerId       String   @unique
+  name           String
+  relationship   String
+  phone          String
+  address        String?
+  createdAt      DateTime @default(now())
+
+  worker         MigrantWorker @relation(fields: [workerId], references: [id])
+}
+
+model MedicalVisit {
+  id            String   @id @default(uuid())
+  workerId      String
+  providerId    String?
+  visitDate     DateTime
+  hospital      String
+  doctorName    String
+  diagnosis     String
+  symptoms      String
+  prescription  String?
+  notes         String?
+  followUpDate  DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  worker        MigrantWorker      @relation(fields: [workerId], references: [id])
+  provider      HealthcareProvider? @relation(fields: [providerId], references: [id])
+}
+
+model Medication {
+  id          String   @id @default(uuid())
+  workerId    String
+  medicineName String
+  dosage      String
+  frequency   String
+  startDate   DateTime
+  endDate     DateTime?
+  prescribedBy String
+  isActive    Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  worker      MigrantWorker @relation(fields: [workerId], references: [id])
+}
+
+model Vaccination {
+  id           String   @id @default(uuid())
+  workerId     String
+  vaccineName  String
+  vaccinationDate DateTime
+  dueDate      DateTime?
+  hospital     String
+  batchNo      String?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  worker       MigrantWorker @relation(fields: [workerId], references: [id])
+}
+
+model LabReport {
+  id           String   @id @default(uuid())
+  workerId     String
+  providerId   String?
+  reportName   String
+  testDate     DateTime
+  laboratory   String
+  results      String
+  normalRange  String?
+  status       String   @default("NORMAL") // NORMAL, ABNORMAL, CRITICAL
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  worker       MigrantWorker      @relation(fields: [workerId], references: [id])
+  provider     HealthcareProvider? @relation(fields: [providerId], references: [id])
+}
+
+model HealthcareFacility {
+  id           String   @id @default(uuid())
+  name         String
+  type         String   // HOSPITAL, CLINIC, PHARMACY, EMERGENCY
+  location     String
+  district     String
+  address      String
+  phone        String
+  distance     Float
+  emergency    Boolean  @default(false)
+  openingHours String
+  rating       Float    @default(4.0)
+  isActive     Boolean  @default(true)
+  latitude     Float?
+  longitude    Float?
+  createdAt    DateTime @default(now())
+}
+
+
+model MedicineReminder {
+  id           String   @id @default(uuid())
+  workerId     String
+  medicineName String
+  dosage       String
+  reminderTime String
+  frequency    String
+  isActive     Boolean  @default(true)
+  lastReminded DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  worker       MigrantWorker @relation(fields: [workerId], references: [id])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String
+  action      String
+  resource    String
+  resourceId  String?
+  details     String?
+  ipAddress   String?
+  timestamp   DateTime @default(now())
+
+  user        User @relation(fields: [userId], references: [id])
+}
+
+model HealthDocument {
+  id           String   @id @default(uuid())
+  workerId     String
+  fileName     String   // stored file name on disk
+  originalName String   // original upload name
+  mimeType     String
+  fileSize     Int      // bytes
+  fileUrl      String   // relative path served by Express
+  category     String   @default("GENERAL") // PRESCRIPTION, LAB_REPORT, SCAN, CERTIFICATE, GENERAL
+  description  String?
+  uploadedAt   DateTime @default(now())
+
+  worker       MigrantWorker @relation(fields: [workerId], references: [id])
+}

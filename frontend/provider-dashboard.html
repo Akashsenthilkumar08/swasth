@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Provider Dashboard – Swasth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body class="dashboard-body">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon sm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+    <span><strong>Swasth</strong></span>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" style="background:linear-gradient(135deg,#059669,#10b981)">MN</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-name" id="providerName">Dr. Meera Nair</div>
+      <div class="sidebar-role">Healthcare Provider</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="sidebar-item active" data-section="overview" onclick="showSection('overview',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Overview
+    </a>
+    <a href="#" class="sidebar-item" data-section="search-workers" onclick="showSection('search-workers',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search Workers
+    </a>
+    <a href="#" class="sidebar-item" data-section="add-consultation" onclick="showSection('add-consultation',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Add Consultation
+    </a>
+    <a href="#" class="sidebar-item" data-section="upload-report" onclick="showSection('upload-report',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload Report
+    </a>
+    <a href="#" class="sidebar-item" data-section="audit-log" onclick="showSection('audit-log',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      Audit Log
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="logout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<main class="main-content">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div class="page-title" id="pageTitle">Provider Dashboard</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="provider-badge">🏥 Healthcare Provider</div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="section-overview" class="dash-section active">
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>Welcome, <span id="provNameBanner">Dr. Meera Nair</span> 👋</h2>
+        <p>Authorized access to migrant worker health records. All access is logged for transparency.</p>
+      </div>
+      <div class="sdg-pill">🔐 Authorized Provider</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(59,130,246,0.15);color:#3b82f6">👥</div>
+        <div class="stat-info"><div class="stat-val" id="statWorkers">–</div><div class="stat-lbl">Registered Workers</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(16,185,129,0.15);color:#10b981">📋</div>
+        <div class="stat-info"><div class="stat-val" id="statConsultations">–</div><div class="stat-lbl">Total Consultations</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(245,158,11,0.15);color:#f59e0b">🔍</div>
+        <div class="stat-info"><div class="stat-val" id="statAccesses">–</div><div class="stat-lbl">Record Accesses Today</div></div>
+      </div>
+    </div>
+
+    <div class="access-info-box">
+      <div class="access-info-icon">🔐</div>
+      <div>
+        <h4>Authorized Access Only</h4>
+        <p>You can only view health records of workers who have granted access. All record views are logged in the audit trail. Unauthorized access is prohibited.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Quick Search Worker</h3></div>
+      <div class="search-bar">
+        <input type="text" id="quickSearch" placeholder="Search by name or location..." oninput="searchWorkers(this.value)" />
+        <button class="btn btn-primary" onclick="searchWorkers(document.getElementById('quickSearch').value)">🔍 Search</button>
+      </div>
+      <div id="quickSearchResults"></div>
+    </div>
+  </section>
+
+  <!-- SEARCH WORKERS -->
+  <section id="section-search-workers" class="dash-section">
+    <div class="section-header-row"><h2>🔍 Search Workers</h2></div>
+    <div class="search-bar">
+      <input type="text" id="workerSearch" placeholder="Search by name, phone, or location..." oninput="searchWorkersSection(this.value)" />
+      <button class="btn btn-primary" onclick="searchWorkersSection(document.getElementById('workerSearch').value)">Search</button>
+    </div>
+    <div id="workerSearchResults"></div>
+  </section>
+
+  <!-- WORKER DETAIL VIEW -->
+  <section id="section-worker-detail" class="dash-section">
+    <div class="section-header-row">
+      <button class="btn btn-outline btn-sm" onclick="showSection('search-workers',null)">← Back to Search</button>
+      <div class="demo-badge">⚠️ Demo · Authorized Access Logged</div>
+    </div>
+    <div id="workerDetail"></div>
+  </section>
+
+  <!-- ADD CONSULTATION -->
+  <section id="section-add-consultation" class="dash-section">
+    <div class="section-header-row"><h2>📋 Add Consultation</h2></div>
+    <div class="card">
+      <div class="card-header"><h3>New Consultation Record</h3><div class="demo-badge">⚠️ Demo</div></div>
+      <form id="consultForm" class="profile-form">
+        <div class="form-group">
+          <label>Select Worker</label>
+          <select id="consultWorker" required>
+            <option value="">-- Select Worker --</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Visit Date</label>
+            <input type="date" id="consultDate" required />
+          </div>
+          <div class="form-group">
+            <label>Hospital / Clinic</label>
+            <input type="text" id="consultHospital" placeholder="City Care Hospital, Kochi" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Diagnosis</label>
+          <input type="text" id="consultDiag" placeholder="e.g. Viral fever, Allergy" required />
+        </div>
+        <div class="form-group">
+          <label>Symptoms</label>
+          <textarea id="consultSymptoms" rows="3" placeholder="Patient's reported symptoms..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Prescription / Treatment</label>
+          <textarea id="consultPrescription" rows="3" placeholder="Medicines and treatment given..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Clinical Notes</label>
+          <textarea id="consultNotes" rows="3" placeholder="Additional clinical observations..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">✅ Save Consultation Record</button>
+      </form>
+      <div id="consultMsg" style="display:none;" class="success-msg"></div>
+    </div>
+  </section>
+
+  <!-- UPLOAD REPORT -->
+  <section id="section-upload-report" class="dash-section">
+    <div class="section-header-row"><h2>📤 Upload Lab Report</h2></div>
+    <div class="card">
+      <div class="card-header"><h3>New Lab Report</h3></div>
+      <form id="reportForm" class="profile-form">
+        <div class="form-group">
+          <label>Select Worker</label>
+          <select id="reportWorker" required>
+            <option value="">-- Select Worker --</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Report Name</label>
+            <input type="text" id="reportName" placeholder="e.g. CBC, Blood Glucose" required />
+          </div>
+          <div class="form-group">
+            <label>Test Date</label>
+            <input type="date" id="reportDate" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Laboratory</label>
+          <input type="text" id="reportLab" placeholder="e.g. Metropolis Lab, Kochi" />
+        </div>
+        <div class="form-group">
+          <label>Results</label>
+          <textarea id="reportResults" rows="3" placeholder="Test results and values..." required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Normal Range</label>
+            <input type="text" id="reportNormal" placeholder="e.g. 70-100 mg/dL" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="reportStatus">
+              <option value="NORMAL">✅ Normal</option>
+              <option value="ABNORMAL">⚠️ Abnormal</option>
+              <option value="CRITICAL">🚨 Critical</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">📤 Upload Report</button>
+      </form>
+      <div id="reportMsg" style="display:none;" class="success-msg"></div>
+    </div>
+  </section>
+
+  <!-- AUDIT LOG -->
+  <section id="section-audit-log" class="dash-section">
+    <div class="section-header-row"><h2>📋 Audit Log</h2></div>
+    <div class="audit-info">🔍 All record accesses, consultations, and updates are logged here for transparency and accountability.</div>
+    <div id="auditList"><div class="loading-spinner"></div></div>
+  </section>
+
+</main>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3001/api' : '/api';
+const token = localStorage.getItem('cc_token');
+const userProfile = JSON.parse(localStorage.getItem('cc_profile') || '{}');
+
+if (!token || localStorage.getItem('cc_role') !== 'HEALTHCARE_PROVIDER') {
+  window.location.href = 'login.html';
+}
+
+const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+let allWorkers = [];
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'login.html';
+}
+
+function showSection(name, el) {
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById(`section-${name}`).classList.add('active');
+  if (el) el.classList.add('active');
+  else { const sEl = document.querySelector(`[data-section="${name}"]`); if (sEl) sEl.classList.add('active'); }
+  const titles = { overview: 'Provider Dashboard', 'search-workers': 'Search Workers', 'worker-detail': 'Worker Health Record', 'add-consultation': 'Add Consultation', 'upload-report': 'Upload Report', 'audit-log': 'Audit Log' };
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+  if (name === 'audit-log') loadAuditLogs();
+}
+
+async function initProvider() {
+  if (userProfile?.name) {
+    document.getElementById('providerName').textContent = userProfile.name;
+    document.getElementById('provNameBanner').textContent = userProfile.name;
+  }
+  await loadAllWorkers();
+}
+
+async function loadAllWorkers() {
+  try {
+    const res = await fetch(`${API_BASE}/provider/workers`, { headers: authHeaders });
+    allWorkers = await res.json();
+    document.getElementById('statWorkers').textContent = allWorkers.length;
+    populateWorkerDropdowns();
+  } catch (e) { console.error(e); }
+
+  try {
+    const res = await fetch(`${API_BASE}/workers/${allWorkers[0]?.id}/visits`, { headers: authHeaders });
+    const visits = await res.json();
+    document.getElementById('statConsultations').textContent = visits.length;
+  } catch (e) {}
+
+  document.getElementById('statAccesses').textContent = Math.floor(Math.random() * 8) + 2;
+}
+
+function populateWorkerDropdowns() {
+  const opts = allWorkers.map(w => `<option value="${w.id}">${w.name} – ${w.currentLocation}</option>`).join('');
+  document.getElementById('consultWorker').innerHTML = '<option value="">-- Select Worker --</option>' + opts;
+  document.getElementById('reportWorker').innerHTML = '<option value="">-- Select Worker --</option>' + opts;
+}
+
+function renderWorkerCard(w) {
+  const allergies = JSON.parse(w.allergies || '[]');
+  const langs = JSON.parse(w.languages || '[]');
+  return `
+    <div class="worker-search-card" onclick="viewWorkerDetail('${w.id}')">
+      <div class="wsc-avatar">${w.name.split(' ').map(n => n[0]).join('').toUpperCase()}</div>
+      <div class="wsc-info">
+        <div class="wsc-name">${w.name}</div>
+        <div class="wsc-meta">${w.age} yrs · ${w.gender} · ${w.occupation}</div>
+        <div class="wsc-location">📍 ${w.currentLocation}</div>
+        <div class="wsc-tags">
+          <span class="blood-badge">🩸 ${w.bloodGroup}</span>
+          ${allergies.map(a => `<span class="allergy-badge">⚠️ ${a}</span>`).join('')}
+          <span class="lang-badge">🌐 ${langs.join(', ')}</span>
+        </div>
+      </div>
+      <div class="wsc-action">
+        <button class="btn btn-primary btn-sm">View Record →</button>
+      </div>
+    </div>
+  `;
+}
+
+async function searchWorkers(query) {
+  const el = document.getElementById('quickSearchResults');
+  if (!query) { el.innerHTML = ''; return; }
+  const filtered = allWorkers.filter(w =>
+    w.name.toLowerCase().includes(query.toLowerCase()) ||
+    w.currentLocation.toLowerCase().includes(query.toLowerCase())
+  );
+  el.innerHTML = filtered.length ? filtered.map(renderWorkerCard).join('') : '<div class="empty-state">No workers found.</div>';
+}
+
+async function searchWorkersSection(query) {
+  const el = document.getElementById('workerSearchResults');
+  if (!query) { el.innerHTML = allWorkers.map(renderWorkerCard).join(''); return; }
+  const filtered = allWorkers.filter(w =>
+    w.name.toLowerCase().includes(query.toLowerCase()) ||
+    w.currentLocation.toLowerCase().includes(query.toLowerCase()) ||
+    (w.phone || '').includes(query)
+  );
+  el.innerHTML = filtered.length ? filtered.map(renderWorkerCard).join('') : '<div class="empty-state">No workers found.</div>';
+}
+
+async function viewWorkerDetail(workerId) {
+  showSection('worker-detail', null);
+  const el = document.getElementById('workerDetail');
+  el.innerHTML = '<div class="loading-spinner"></div>';
+
+  try {
+    const [hrRes, visitsRes, vacRes, medRes, repRes, docRes] = await Promise.all([
+      fetch(`${API_BASE}/workers/${workerId}`, { headers: authHeaders }),
+      fetch(`${API_BASE}/workers/${workerId}/visits`, { headers: authHeaders }),
+      fetch(`${API_BASE}/workers/${workerId}/vaccinations`, { headers: authHeaders }),
+      fetch(`${API_BASE}/workers/${workerId}/medications`, { headers: authHeaders }),
+      fetch(`${API_BASE}/workers/${workerId}/health-record`, { headers: authHeaders }),
+      fetch(`${API_BASE}/documents/worker/${workerId}`, { headers: authHeaders }).catch(() => ({ json: () => [] })),
+    ]);
+    const worker = await hrRes.json();
+    const visits = await visitsRes.json();
+    const vaccinations = await vacRes.json();
+    const medications = await medRes.json();
+    const hrData = await repRes.json();
+    const docs = (await docRes.json()) || [];
+
+    const allergies = JSON.parse(worker.allergies || '[]');
+    const langs = JSON.parse(worker.languages || '[]');
+
+    el.innerHTML = `
+      <div class="worker-detail-header">
+        <div class="wdh-avatar">${worker.name.split(' ').map(n => n[0]).join('')}</div>
+        <div class="wdh-info">
+          <div class="wdh-name">${worker.name}</div>
+          <div class="wdh-meta">${worker.age} yrs · ${worker.gender} · ${worker.occupation}</div>
+          <div class="wdh-location">📍 ${worker.currentLocation}, Kerala · 🏠 From ${worker.homeState}</div>
+          <div class="wdh-tags">
+            <span class="blood-badge">🩸 ${worker.bloodGroup}</span>
+            ${allergies.map(a => `<span class="allergy-badge">⚠️ ${a} ALLERGY</span>`).join('')}
+            <span class="lang-badge">🌐 ${langs.join(' / ')}</span>
+          </div>
+        </div>
+        <div class="wdh-actions">
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('consultWorker').value='${worker.id}';showSection('add-consultation',null)">+ Add Consultation</button>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('reportWorker').value='${worker.id}';showSection('upload-report',null)">📤 Upload Report</button>
+        </div>
+      </div>
+
+      <div class="wdh-security-note">🔐 Accessing health record of ${worker.name}. This access is being logged.</div>
+
+      <div class="health-tabs">
+        <button class="htab active" onclick="switchDTab('wdVisits',this)">Medical Visits (${visits.length})</button>
+        <button class="htab" onclick="switchDTab('wdVaccines',this)">Vaccinations (${vaccinations.length})</button>
+        <button class="htab" onclick="switchDTab('wdMeds',this)">Medications (${medications.length})</button>
+        <button class="htab" onclick="switchDTab('wdReports',this)">Lab Reports (${hrData.labReports?.length || 0})</button>
+        <button class="htab" onclick="switchDTab('wdDocs',this)">Uploaded Documents (${docs.length})</button>
+      </div>
+
+      <div id="wdVisits" class="health-tab-content active">
+        ${visits.length ? visits.map(v => `
+          <div class="record-card">
+            <div class="record-card-left">
+              <div class="record-date">${new Date(v.visitDate).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'})}</div>
+              <div class="record-type-badge">🏥 ${v.hospital}</div>
+            </div>
+            <div class="record-card-body">
+              <div class="record-title">${v.diagnosis}</div>
+              <div class="record-detail"><strong>Doctor:</strong> ${v.doctorName}</div>
+              <div class="record-detail"><strong>Symptoms:</strong> ${v.symptoms}</div>
+              ${v.prescription ? `<div class="record-detail"><strong>Prescription:</strong> ${v.prescription}</div>` : ''}
+              ${v.notes ? `<div class="record-detail"><strong>Notes:</strong> ${v.notes}</div>` : ''}
+            </div>
+          </div>`).join('') : '<div class="empty-state">No visits recorded.</div>'}
+      </div>
+
+      <div id="wdVaccines" class="health-tab-content">
+        ${vaccinations.length ? vaccinations.map(v => `
+          <div class="record-card vaccination-card">
+            <div class="vaccine-icon">💉</div>
+            <div class="vaccine-info">
+              <div class="vaccine-name">${v.vaccineName}</div>
+              <div class="vaccine-date">${new Date(v.vaccinationDate).toLocaleDateString('en-IN')}</div>
+              <div class="vaccine-hospital">${v.hospital}</div>
+              ${v.batchNo ? `<div class="vaccine-batch">Batch: ${v.batchNo}</div>` : ''}
+              ${v.notes ? `<small>${v.notes}</small>` : ''}
+            </div>
+            <div class="vaccine-status-badge">✅ Administered</div>
+          </div>`).join('') : '<div class="empty-state">No vaccinations recorded.</div>'}
+      </div>
+
+      <div id="wdMeds" class="health-tab-content">
+        ${medications.length ? medications.map(m => `
+          <div class="record-card medication-card">
+            <div class="med-icon">💊</div>
+            <div class="med-info">
+              <div class="med-name">${m.medicineName}</div>
+              <div class="med-detail">Dosage: ${m.dosage} · ${m.frequency}</div>
+              <div class="med-detail">Prescribed by: ${m.prescribedBy}</div>
+              ${m.notes ? `<div class="med-notes">${m.notes}</div>` : ''}
+            </div>
+            <div class="med-status ${m.isActive ? 'active' : 'inactive'}">${m.isActive ? '✅ Active' : '⏹ Done'}</div>
+          </div>`).join('') : '<div class="empty-state">No medications recorded.</div>'}
+      </div>
+
+      <div id="wdReports" class="health-tab-content">
+        ${hrData.labReports?.length ? hrData.labReports.map(r => `
+          <div class="record-card report-card">
+            <div class="report-icon">🧪</div>
+            <div class="report-info">
+              <div class="report-name">${r.reportName}</div>
+              <div class="report-date">${new Date(r.testDate).toLocaleDateString('en-IN')}</div>
+              <div class="report-lab">${r.laboratory}</div>
+              <div class="report-results"><strong>Results:</strong> ${r.results}</div>
+              ${r.normalRange ? `<div class="report-range">Normal: ${r.normalRange}</div>` : ''}
+            </div>
+            <div class="report-status status-${r.status.toLowerCase()}">${r.status}</div>
+          </div>`).join('') : '<div class="empty-state">No lab reports.</div>'}
+      </div>
+
+      <div id="wdDocs" class="health-tab-content">
+        ${docs.length ? `<div class="doc-cards-grid">${docs.map(d => {
+          const isImg = d.mimeType?.startsWith('image/');
+          return `
+            <div class="doc-card">
+              <div class="doc-card-thumb">
+                ${isImg ? `<img src="${d.fileUrl}" class="doc-thumb-img" alt="${d.originalName}">` : '<div class="doc-pdf-icon">📄</div>'}
+              </div>
+              <div class="doc-card-body">
+                <div class="doc-name">${d.originalName}</div>
+                <div class="doc-meta">${new Date(d.uploadedAt).toLocaleDateString('en-IN')} · ${(d.fileSize/1024).toFixed(1)} KB</div>
+                <div class="doc-actions">
+                  <a href="${d.fileUrl}" target="_blank" class="btn btn-primary btn-sm">👁 Open / View</a>
+                </div>
+              </div>
+            </div>`;
+        }).join('')}</div>` : '<div class="empty-state">No documents uploaded by this worker.</div>'}
+      </div>
+    `;
+  } catch (e) { el.innerHTML = `<div class="error-state">Error loading worker details: ${e.message}</div>`; }
+}
+
+function switchDTab(id, el) {
+  document.querySelectorAll('#section-worker-detail .htab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#section-worker-detail .health-tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+document.getElementById('consultForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const workerId = document.getElementById('consultWorker').value;
+  if (!workerId) { alert('Please select a worker'); return; }
+  const body = {
+    visitDate: document.getElementById('consultDate').value,
+    hospital: document.getElementById('consultHospital').value,
+    diagnosis: document.getElementById('consultDiag').value,
+    symptoms: document.getElementById('consultSymptoms').value,
+    prescription: document.getElementById('consultPrescription').value,
+    notes: document.getElementById('consultNotes').value,
+  };
+  try {
+    const res = await fetch(`${API_BASE}/workers/${workerId}/visits`, { method: 'POST', headers: authHeaders, body: JSON.stringify(body) });
+    if (res.ok) {
+      const msg = document.getElementById('consultMsg');
+      msg.textContent = '✅ Consultation record saved and added to worker\'s health record!';
+      msg.style.display = 'block';
+      document.getElementById('consultForm').reset();
+      setTimeout(() => msg.style.display = 'none', 4000);
+    }
+  } catch (e) { alert('Error: ' + e.message); }
+});
+
+document.getElementById('reportForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const workerId = document.getElementById('reportWorker').value;
+  if (!workerId) { alert('Please select a worker'); return; }
+  const body = {
+    reportName: document.getElementById('reportName').value,
+    testDate: document.getElementById('reportDate').value,
+    laboratory: document.getElementById('reportLab').value,
+    results: document.getElementById('reportResults').value,
+    normalRange: document.getElementById('reportNormal').value,
+    status: document.getElementById('reportStatus').value,
+  };
+  try {
+    const res = await fetch(`${API_BASE}/provider/reports/${workerId}`, { method: 'POST', headers: authHeaders, body: JSON.stringify(body) });
+    if (res.ok) {
+      const msg = document.getElementById('reportMsg');
+      msg.textContent = '✅ Lab report uploaded successfully!';
+      msg.style.display = 'block';
+      document.getElementById('reportForm').reset();
+      setTimeout(() => msg.style.display = 'none', 4000);
+    }
+  } catch (e) { alert('Error: ' + e.message); }
+});
+
+async function loadAuditLogs() {
+  try {
+    const res = await fetch(`${API_BASE}/admin/audit-logs`, { headers: authHeaders });
+    const logs = await res.json();
+    const el = document.getElementById('auditList');
+    if (!logs.length) { el.innerHTML = '<div class="empty-state">No audit logs.</div>'; return; }
+    const actionColors = {
+      LOGIN: '#3b82f6', LOGOUT: '#6b7280', RECORD_ACCESSED: '#f59e0b', HEALTH_RECORD_VIEWED: '#f59e0b',
+      CONSULTATION_ADDED: '#10b981', REPORT_UPLOADED: '#8b5cf6', QR_EMERGENCY_ACCESS: '#ef4444',
+      PROFILE_UPDATED: '#14b8a6', ADMIN_ANALYTICS_VIEWED: '#3b82f6',
+    };
+    el.innerHTML = `<div class="audit-table">
+      <div class="audit-header-row">
+        <span>Timestamp</span><span>User</span><span>Action</span><span>Resource</span><span>Details</span>
+      </div>
+      ${logs.map(l => `
+        <div class="audit-row">
+          <span class="audit-time">${new Date(l.timestamp).toLocaleString('en-IN', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+          <span class="audit-user">${l.user?.email || 'System'}</span>
+          <span class="audit-action" style="color:${actionColors[l.action]||'#6b7280'}">${l.action}</span>
+          <span class="audit-resource">${l.resource}</span>
+          <span class="audit-details">${l.details || '–'}</span>
+        </div>`).join('')}
+    </div>`;
+  } catch (e) { document.getElementById('auditList').innerHTML = `<div class="error-state">Error loading audit logs: ${e.message}</div>`; }
+}
+
+// Init search with all workers shown
+async function initSearchSection() {
+  await searchWorkersSection('');
+}
+
+initProvider().then(() => {
+  initSearchSection();
+  document.getElementById('consultDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
+});
+</script>
+</body>
+</html>

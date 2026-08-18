@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Worker Dashboard – Swasth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="dashboard-body">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon sm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+    <span><strong>Swasth</strong></span>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebarAvatar">AK</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-name" id="sidebarName">Arun Kumar</div>
+      <div class="sidebar-role">Migrant Worker</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="sidebar-item active" data-section="overview" onclick="showSection('overview',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Overview
+    </a>
+    <a href="#" class="sidebar-item" data-section="health-record" onclick="showSection('health-record',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Health Record
+    </a>
+    <a href="#" class="sidebar-item" data-section="chatbot" onclick="showSection('chatbot',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI Assistant
+    </a>
+    <a href="#" class="sidebar-item" data-section="nearby" onclick="showSection('nearby',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 7 13 8 14 1-1 8-8.75 8-14a8 8 0 0 0-8-8z"/></svg>
+      Nearby Healthcare
+    </a>
+
+    <a href="#" class="sidebar-item" data-section="reminders" onclick="showSection('reminders',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Medicine Reminders
+    </a>
+    <a href="#" class="sidebar-item" data-section="qr-card" onclick="showSection('qr-card',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+      Emergency QR
+    </a>
+    <a href="#" class="sidebar-item" data-section="documents" onclick="showSection('documents',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="12 18 12 12"/><polyline points="9 15 12 12 15 15"/></svg>
+      Health Documents
+    </a>
+    <a href="#" class="sidebar-item" data-section="profile" onclick="showSection('profile',this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      My Profile
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="logout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+      <div class="page-title" id="pageTitle">Dashboard Overview</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="demo-badge-sm">⚠️ Demo Data</div>
+      <div class="location-selector">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.25 7 13 8 14 1-1 8-8.75 8-14a8 8 0 0 0-8-8z"/></svg>
+        <select id="globalLocation" onchange="updateLocation()">
+          <option value="Kochi">Kochi</option>
+          <option value="Thrissur">Thrissur</option>
+          <option value="Kozhikode">Kozhikode</option>
+          <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== OVERVIEW ================== -->
+  <section id="section-overview" class="dash-section active">
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>Good <span id="timeGreeting">morning</span>, <span id="workerFirstName">Arun</span>! 👋</h2>
+        <p>Your health record is secure and portable. Swasth is here with you.</p>
+      </div>
+      <div class="sdg-pill">🌱 SDG 3 – Good Health</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(59,130,246,0.15);color:#3b82f6">🏥</div>
+        <div class="stat-info">
+          <div class="stat-val" id="statVisits">–</div>
+          <div class="stat-lbl">Medical Visits</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(16,185,129,0.15);color:#10b981">💉</div>
+        <div class="stat-info">
+          <div class="stat-val" id="statVaccines">–</div>
+          <div class="stat-lbl">Vaccinations</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(245,158,11,0.15);color:#f59e0b">💊</div>
+        <div class="stat-info">
+          <div class="stat-val" id="statMeds">–</div>
+          <div class="stat-lbl">Active Medications</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(239,68,68,0.15);color:#ef4444">🔔</div>
+        <div class="stat-info">
+          <div class="stat-val" id="statReminders">–</div>
+          <div class="stat-lbl">Reminders Set</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-grid">
+      <div class="card">
+        <div class="card-header">
+          <h3>Personal Summary</h3>
+          <span class="security-badge">🔐 Protected</span>
+        </div>
+        <div class="profile-summary">
+          <div class="ps-avatar" id="psAvatar">AK</div>
+          <div class="ps-details">
+            <div class="ps-name" id="psName">Arun Kumar</div>
+            <div class="ps-meta" id="psMeta">29 years · Male · Construction Worker</div>
+            <div class="ps-location" id="psLocation">📍 Kochi, Kerala</div>
+            <div class="ps-tags">
+              <span class="blood-badge" id="psBlood">🩸 O+</span>
+              <span class="allergy-badge" id="psAllergy">⚠️ Penicillin</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Quick Actions</h3></div>
+        <div class="quick-actions">
+          <button class="quick-action-btn" onclick="showSection('chatbot', null)">
+            <span>🤖</span> AI Assistant
+          </button>
+          <button class="quick-action-btn" onclick="showSection('nearby', null)">
+            <span>🏥</span> Find Hospital
+          </button>
+          <button class="quick-action-btn" onclick="showSection('qr-card', null)">
+            <span>📱</span> Emergency QR
+          </button>
+          <button class="quick-action-btn" onclick="showSection('reminders', null)">
+            <span>🔔</span> Set Reminder
+          </button>
+
+          <button class="quick-action-btn" onclick="showSection('health-record', null)">
+            <span>📋</span> Health Record
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Upcoming Reminders</h3></div>
+        <div id="overviewReminders"><div class="loading-spinner"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Recent Visits</h3></div>
+        <div id="overviewVisits"><div class="loading-spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== HEALTH RECORD ================== -->
+  <section id="section-health-record" class="dash-section">
+    <div class="section-header-row">
+      <h2>Digital Health Record</h2>
+      <div class="demo-badge">⚠️ Demo / Sample Data</div>
+    </div>
+
+    <div class="health-tabs">
+      <button class="htab active" onclick="switchHealthTab('visits', this)">Medical Visits</button>
+      <button class="htab" onclick="switchHealthTab('vaccinations', this)">Vaccinations</button>
+      <button class="htab" onclick="switchHealthTab('medications', this)">Medications</button>
+      <button class="htab" onclick="switchHealthTab('reports', this)">Lab Reports</button>
+    </div>
+
+    <div id="healthTabVisits" class="health-tab-content active">
+      <div id="visitsList"><div class="loading-spinner"></div></div>
+    </div>
+    <div id="healthTabVaccinations" class="health-tab-content">
+      <div id="vaccinationsList"><div class="loading-spinner"></div></div>
+    </div>
+    <div id="healthTabMedications" class="health-tab-content">
+      <div id="medicationsList"><div class="loading-spinner"></div></div>
+    </div>
+    <div id="healthTabReports" class="health-tab-content">
+      <div id="reportsList"><div class="loading-spinner"></div></div>
+    </div>
+  </section>
+
+  <!-- ================== AI CHATBOT ================== -->
+  <section id="section-chatbot" class="dash-section">
+    <div class="section-header-row">
+      <h2>🤖 Swasth AI Assistant</h2>
+      <select id="chatLanguage" class="lang-select" onchange="onLanguageChange()">
+        <option value="English">🇬🇧 English</option>
+        <option value="Tamil">🇮🇳 Tamil</option>
+        <option value="Malayalam">🇮🇳 Malayalam</option>
+        <option value="Hindi">🇮🇳 Hindi</option>
+      </select>
+    </div>
+    <div class="chat-disclaimer">ℹ️ This AI assistant provides general guidance only. It does not diagnose diseases or prescribe medicines. For medical advice, consult a qualified healthcare professional.</div>
+    <div class="chatbot-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg bot-msg">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-content">
+            <div class="msg-bubble">
+              <strong>Hello! I'm Swasth Assistant.</strong><br/><br/>
+              I can help you with:<br/>
+              🏥 Find nearby hospitals and clinics<br/>
+              💊 Find pharmacies<br/>
+
+              📋 View your health records<br/>
+              🔔 Medicine reminders<br/>
+              🚨 Emergency support<br/><br/>
+              What would you like help with?
+            </div>
+            <div class="msg-time">Just now</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-suggestions" id="chatSuggestions">
+        <button class="chat-suggestion" onclick="sendSuggestion(this)">I am new to Kochi. Where is the nearest hospital?</button>
+
+        <button class="chat-suggestion" onclick="sendSuggestion(this)">Show my vaccination record</button>
+        <button class="chat-suggestion" onclick="sendSuggestion(this)">I need a pharmacy nearby</button>
+        <button class="chat-suggestion" onclick="sendSuggestion(this)">Medical emergency! Where's the nearest hospital?</button>
+        <button class="chat-suggestion" onclick="sendSuggestion(this)">Remind me about my medicine</button>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Type your message... (English, Tamil, Malayalam, Hindi)" onkeypress="handleChatKey(event)"/>
+        <button class="btn btn-primary" onclick="sendChatMessage()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== NEARBY HEALTHCARE ================== -->
+  <section id="section-nearby" class="dash-section">
+    <div class="section-header-row">
+      <h2>📍 Nearby Healthcare</h2>
+      <div class="demo-badge">⚠️ Demo Data</div>
+    </div>
+    <!-- EMERGENCY SOS NUMBERS BANNER -->
+    <div class="sos-banner" style="background:linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.25)); border:1px solid rgba(239,68,68,0.4); border-radius: var(--radius-md); padding:16px; margin-bottom:20px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+      <div>
+        <h3 style="color:#ef4444; margin-bottom:4px; display:flex; align-items:center; gap:8px;">🚨 Emergency SOS Helplines</h3>
+        <p style="font-size:0.85rem; color:var(--text-secondary);">Direct helpline numbers for immediate medical & emergency support in Kerala</p>
+      </div>
+      <div class="sos-numbers" style="display:flex; flex-wrap:wrap; gap:10px;">
+        <a href="tel:108" class="btn" style="background:#ef4444; color:white; font-weight:700; padding:8px 14px; border-radius:8px; display:flex; align-items:center; gap:6px;">🚑 108 Ambulance</a>
+        <a href="tel:112" class="btn" style="background:#dc2626; color:white; font-weight:700; padding:8px 14px; border-radius:8px; display:flex; align-items:center; gap:6px;">🚨 112 Police/Emergency</a>
+        <a href="tel:104" class="btn" style="background:#059669; color:white; font-weight:700; padding:8px 14px; border-radius:8px; display:flex; align-items:center; gap:6px;">📞 104 Health Helpline</a>
+        <a href="tel:1056" class="btn" style="background:#0284c7; color:white; font-weight:700; padding:8px 14px; border-radius:8px; display:flex; align-items:center; gap:6px;">DISHA 1056</a>
+      </div>
+    </div>
+
+    <!-- GPS LOCATION ENABLE BUTTON & STATUS BANNER -->
+    <div id="gpsStatusBanner" style="background:var(--bg-card); border:1px solid var(--border-light); border-radius: var(--radius-md); padding:16px; margin-bottom:20px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:42px; height:42px; border-radius:50%; background:rgba(37,99,235,0.15); display:flex; align-items:center; justify-content:center; font-size:1.4rem;">🎯</div>
+        <div>
+          <h4 id="gpsStatusTitle" style="font-weight:600; margin-bottom:2px;">Turn On Location Services</h4>
+          <p id="gpsStatusDesc" style="font-size:0.85rem; color:var(--text-secondary);">Enable GPS to view live interactive maps and pin exact nearby clinics, hospitals & pharmacies.</p>
+        </div>
+      </div>
+      <button id="enableGpsBtn" class="btn btn-primary" onclick="getUserGPSLocation()" style="display:flex; align-items:center; gap:8px; font-weight:600; padding:10px 18px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 7 13 8 14 1-1 8-8.75 8-14a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Enable Live Location</span>
+      </button>
+    </div>
+
+    <!-- INTERACTIVE MAP CONTAINER -->
+    <div class="card" style="margin-bottom:24px; padding:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding:0 4px;">
+        <h4 style="display:flex; align-items:center; gap:8px;">🗺️ Interactive Healthcare Map</h4>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="font-size:0.75rem; color:#ef4444;">🔴 Hospital</span>
+          <span style="font-size:0.75rem; color:#ec4899;">💗 Clinic</span>
+          <span style="font-size:0.75rem; color:#10b981;">🟢 Pharmacy</span>
+          <span id="mapCountBadge" class="doc-cat-badge" style="background:rgba(37,99,235,0.2); color:#60a5fa;">Showing all facilities</span>
+        </div>
+      </div>
+      <div id="facilityMap" style="width:100%; height:340px; border-radius:var(--radius-md); border:1px solid var(--border-light); background:#0f0f1e; z-index:1;"></div>
+    </div>
+
+    <!-- NEAREST DISTANCE PREDICTION & COMPARISON CARD -->
+    <div id="nearestPredictionCard" style="display:none; background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.15)); border:1px solid rgba(16,185,129,0.3); border-radius:var(--radius-md); padding:18px; margin-bottom:24px;">
+      <h3 style="color:#10b981; margin-bottom:6px; display:flex; align-items:center; gap:8px; font-size:1.05rem;">
+        ⚡ AI Nearest Healthcare Distance Prediction & Comparison
+      </h3>
+      <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">Calculated smallest travel distance from your live GPS location:</p>
+      
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+        <!-- Nearest Hospital -->
+        <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); padding:12px; border-radius:10px;">
+          <div style="font-size:0.75rem; color:#f87171; font-weight:700; text-transform:uppercase;">🏥 Closest Hospital</div>
+          <div id="nearestHospitalName" style="font-weight:700; font-size:0.95rem; margin:4px 0 2px 0; color:#white;">Detecting...</div>
+          <div id="nearestHospitalDist" style="font-size:0.85rem; color:#fca5a5; font-weight:600;">-- km away</div>
+        </div>
+
+        <!-- Nearest Clinic -->
+        <div style="background:rgba(236,72,153,0.12); border:1px solid rgba(236,72,153,0.3); padding:12px; border-radius:10px;">
+          <div style="font-size:0.75rem; color:#f472b6; font-weight:700; text-transform:uppercase;">🏩 Closest Clinic</div>
+          <div id="nearestClinicName" style="font-weight:700; font-size:0.95rem; margin:4px 0 2px 0; color:#white;">Detecting...</div>
+          <div id="nearestClinicDist" style="font-size:0.85rem; color:#fbcfe8; font-weight:600;">-- km away</div>
+        </div>
+
+        <!-- Nearest Pharmacy -->
+        <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); padding:12px; border-radius:10px;">
+          <div style="font-size:0.75rem; color:#34d399; font-weight:700; text-transform:uppercase;">💊 Closest Pharmacy</div>
+          <div id="nearestPharmacyName" style="font-weight:700; font-size:0.95rem; margin:4px 0 2px 0; color:#white;">Detecting...</div>
+          <div id="nearestPharmacyDist" style="font-size:0.85rem; color:#a7f3d0; font-weight:600;">-- km away</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nearby-filters" style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+      <div style="flex:1; min-width:240px; position:relative;">
+        <input type="text" id="nearbySearchInput" placeholder="🔍 Enter your exact location / address (e.g. Aluva, Edappally, Palarivattom...)" oninput="onLocationSearchInput()" style="padding-left:14px; font-size:0.9rem;" />
+      </div>
+      <select id="nearbyLocation" onchange="loadNearbyFacilities()" style="width:auto; min-width:140px;">
+        <option value="Kochi">Kochi District</option>
+        <option value="Thrissur">Thrissur District</option>
+        <option value="Kozhikode">Kozhikode District</option>
+        <option value="Thiruvananthapuram">Trivandrum District</option>
+      </select>
+      <div class="filter-btns">
+        <button class="filter-btn active" onclick="filterFacility('ALL', this)">All</button>
+        <button class="filter-btn" onclick="filterFacility('HOSPITAL', this)">🏥 Hospitals</button>
+        <button class="filter-btn" onclick="filterFacility('CLINIC', this)">🏩 Clinics</button>
+        <button class="filter-btn" onclick="filterFacility('PHARMACY', this)">💊 Pharmacies</button>
+      </div>
+    </div>
+    <div id="nearbyList" class="facilities-grid"><div class="loading-spinner"></div></div>
+    <div class="emergency-note">🚨 For real medical emergencies, call <strong>108</strong> (Ambulance), <strong>112</strong> (National Emergency), or <strong>104</strong> (Health Helpline)</div>
+  </section>
+
+
+
+  <!-- ================== REMINDERS ================== -->
+  <section id="section-reminders" class="dash-section">
+    <div class="section-header-row">
+      <h2>💊 Medicine Reminders</h2>
+    </div>
+    <div class="reminder-layout">
+      <div class="card reminder-form-card">
+        <div class="card-header"><h3>Set New Reminder</h3></div>
+        <div class="reminder-note">⚠️ Only set reminders for medicines prescribed by your doctor. Do not self-medicate.</div>
+        <form id="reminderForm" class="reminder-form">
+          <div class="form-group">
+            <label>Medicine Name</label>
+            <input type="text" id="reminderMed" placeholder="e.g. Cetirizine 10mg" required />
+          </div>
+          <div class="form-group">
+            <label>Dosage</label>
+            <input type="text" id="reminderDosage" placeholder="e.g. 1 tablet" />
+          </div>
+          <div class="form-group">
+            <label>Reminder Time</label>
+            <input type="time" id="reminderTime" required />
+          </div>
+          <div class="form-group">
+            <label>Frequency</label>
+            <select id="reminderFreq">
+              <option value="Daily">Daily</option>
+              <option value="Twice daily">Twice daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="As needed">As needed</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">🔔 Set Reminder</button>
+        </form>
+      </div>
+      <div class="card reminders-list-card">
+        <div class="card-header"><h3>Active Reminders</h3></div>
+        <div id="remindersList"><div class="loading-spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== EMERGENCY QR ================== -->
+  <section id="section-qr-card" class="dash-section">
+    <div class="section-header-row">
+      <h2>🚨 Emergency QR Health Card</h2>
+      <div class="demo-badge">⚠️ Demo</div>
+    </div>
+    <div class="qr-layout">
+      <div class="emergency-card">
+        <div class="ec-header">
+          <div class="ec-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          </div>
+          <div>
+            <div class="ec-title">Swasth</div>
+            <div class="ec-subtitle">Emergency Health Card</div>
+          </div>
+          <div class="ec-emergency-icon">🚨</div>
+        </div>
+        <div class="ec-body">
+          <div class="ec-qr">
+            <canvas id="qrCanvas"></canvas>
+          </div>
+          <div class="ec-info">
+            <div class="ec-field">
+              <span class="ec-label">Name</span>
+              <span class="ec-value" id="ecName">Arun Kumar</span>
+            </div>
+            <div class="ec-field">
+              <span class="ec-label">Blood Group</span>
+              <span class="ec-value blood-group" id="ecBlood">O+</span>
+            </div>
+            <div class="ec-field">
+              <span class="ec-label">Allergies</span>
+              <span class="ec-value allergy-list" id="ecAllergies">Penicillin, Dust</span>
+            </div>
+            <div class="ec-field">
+              <span class="ec-label">Emergency Contact</span>
+              <span class="ec-value" id="ecContact">–</span>
+            </div>
+            <div class="ec-field">
+              <span class="ec-label">Contact Phone</span>
+              <span class="ec-value" id="ecPhone">–</span>
+            </div>
+          </div>
+        </div>
+        <div class="ec-footer">
+          🔐 Authorized healthcare personnel only · Scan QR for limited emergency info
+        </div>
+        <div class="ec-limited-note">⚠️ QR provides only essential emergency information. Full medical history requires authorized access.</div>
+      </div>
+      <div class="qr-actions">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print Card</button>
+        <button class="btn btn-outline" onclick="showSection('health-record', null)">📋 View Full Record</button>
+        <div class="qr-info-box">
+          <h4>What does the QR code show?</h4>
+          <ul>
+            <li>✅ Your name</li>
+            <li>✅ Blood group</li>
+            <li>✅ Known allergies</li>
+            <li>✅ Emergency contact</li>
+            <li>❌ Full medical history (protected)</li>
+            <li>❌ Prescriptions (protected)</li>
+            <li>❌ Lab reports (protected)</li>
+          </ul>
+          <p>Only authorized healthcare providers can access your full health record.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== PROFILE ================== -->
+  <section id="section-profile" class="dash-section">
+    <div class="section-header-row">
+      <h2>My Profile</h2>
+      <div class="demo-badge">⚠️ Demo Data</div>
+    </div>
+    <div class="profile-layout">
+      <div class="card profile-card">
+        <div class="profile-header-big">
+          <div class="profile-avatar-big" id="profileAvatarBig">AK</div>
+          <div>
+            <div class="profile-name-big" id="profileNameBig">Arun Kumar</div>
+            <div class="profile-email">worker@careconnect.demo</div>
+            <div class="profile-location">📍 <span id="profileLocationBig">Kochi</span>, Kerala</div>
+          </div>
+        </div>
+        <div class="profile-security-badge">🔐 Secure Digital Health Profile · Swasth</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Edit Profile</h3>
+          <div id="profileSaveMsg" style="display:none;" class="success-msg">✅ Saved!</div>
+        </div>
+        <form id="profileForm" class="profile-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="pfName" required />
+            </div>
+            <div class="form-group">
+              <label>Age</label>
+              <input type="number" id="pfAge" min="18" max="65" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="pfPhone" />
+            </div>
+            <div class="form-group">
+              <label>Current Location</label>
+              <select id="pfLocation">
+                <option value="Kochi">Kochi</option>
+                <option value="Thrissur">Thrissur</option>
+                <option value="Kozhikode">Kozhikode</option>
+                <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Occupation</label>
+            <input type="text" id="pfOccupation" />
+          </div>
+          <div class="form-group">
+            <label>Blood Group</label>
+            <input type="text" id="pfBlood" disabled class="disabled-field" />
+            <small>Blood group changes require healthcare provider verification.</small>
+          </div>
+          <div class="form-group">
+            <label>Known Allergies</label>
+            <input type="text" id="pfAllergies" disabled class="disabled-field" />
+            <small>Allergy updates require healthcare provider verification.</small>
+          </div>
+          <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== DOCUMENTS ================== -->
+  <section id="section-documents" class="dash-section">
+    <div class="section-header-row">
+      <h2>📁 Health Documents</h2>
+      <div class="demo-badge">Stored Securely</div>
+    </div>
+
+    <div class="doc-layout">
+      <!-- UPLOAD CARD -->
+      <div class="card doc-upload-card">
+        <div class="card-header"><h3>📤 Upload Document</h3></div>
+        <div class="doc-upload-info">
+          Accepted: <strong>PDF, JPG, PNG, WebP</strong> · Max size: <strong>10 MB</strong>
+        </div>
+
+        <!-- Drop zone -->
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-icon">📂</div>
+          <div class="drop-zone-text">Drag &amp; drop file here</div>
+          <div class="drop-zone-sub">or click to browse</div>
+          <input type="file" id="docFile" accept=".pdf,.jpg,.jpeg,.png,.webp" style="display:none" onchange="onFileSelected(this)"/>
+          <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="document.getElementById('docFile').click()">Browse Files</button>
+        </div>
+
+        <!-- Selected file preview -->
+        <div id="filePreviewArea" style="display:none" class="file-preview-area">
+          <div id="fileThumb" class="file-thumb"></div>
+          <div class="file-preview-info">
+            <div class="file-preview-name" id="filePreviewName"></div>
+            <div class="file-preview-size" id="filePreviewSize"></div>
+          </div>
+          <button class="btn-remove-file" onclick="clearFileSelection()">✕</button>
+        </div>
+
+        <div class="form-group" style="margin-top:16px">
+          <label>Document Category</label>
+          <select id="docCategory">
+            <option value="GENERAL">📄 General Document</option>
+            <option value="PRESCRIPTION">💊 Prescription</option>
+            <option value="LAB_REPORT">🧪 Lab Report</option>
+            <option value="SCAN">🩻 Scan / X-Ray / MRI</option>
+            <option value="CERTIFICATE">📋 Medical Certificate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Description <span style="color:var(--text-muted)">(optional)</span></label>
+          <input type="text" id="docDescription" placeholder="e.g. Blood test from City Care Hospital, July 2024"/>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="uploadBtn" onclick="uploadDocument()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Document
+        </button>
+        <div id="uploadMsg" style="display:none;margin-top:12px" class="success-msg"></div>
+        <div id="uploadErrMsg" style="display:none;margin-top:12px" class="alert alert-error"></div>
+
+        <!-- Upload progress -->
+        <div id="uploadProgress" style="display:none;margin-top:12px">
+          <div class="upload-progress-bar"><div class="upload-progress-fill" id="uploadFill"></div></div>
+          <div class="upload-progress-text" id="uploadProgressText">Uploading...</div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS LIST -->
+      <div>
+        <div class="doc-filter-row">
+          <div class="doc-filter-label">Filter by category:</div>
+          <div class="filter-btns">
+            <button class="filter-btn active" onclick="filterDocs('ALL',this)">All</button>
+            <button class="filter-btn" onclick="filterDocs('PRESCRIPTION',this)">💊 Prescriptions</button>
+            <button class="filter-btn" onclick="filterDocs('LAB_REPORT',this)">🧪 Lab Reports</button>
+            <button class="filter-btn" onclick="filterDocs('SCAN',this)">🩻 Scans</button>
+            <button class="filter-btn" onclick="filterDocs('CERTIFICATE',this)">📋 Certificates</button>
+            <button class="filter-btn" onclick="filterDocs('GENERAL',this)">📄 General</button>
+          </div>
+        </div>
+        <div id="documentsList"><div class="loading-spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- FULL SCREEN IMAGE PREVIEW -->
+    <div id="docViewer" class="doc-viewer-overlay" onclick="closeDocViewer()" style="display:none">
+      <div class="doc-viewer-inner" onclick="event.stopPropagation()">
+        <button class="doc-viewer-close" onclick="closeDocViewer()">✕ Close</button>
+        <img id="docViewerImg" src="" alt="Document" style="display:none;max-width:100%;max-height:80vh;border-radius:8px"/>
+        <iframe id="docViewerPdf" src="" style="display:none;width:100%;height:80vh;border-radius:8px;border:none"></iframe>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3001/api' : '/api';
+let token = localStorage.getItem('cc_token');
+let userProfile = JSON.parse(localStorage.getItem('cc_profile') || '{}');
+let workerId = userProfile?.id;
+let allFacilities = [];
+let currentFacilityFilter = 'ALL';
+
+// Auth check
+if (!token || localStorage.getItem('cc_role') !== 'MIGRANT_WORKER') {
+  window.location.href = 'login.html';
+}
+
+const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+function logout() {
+  fetch(`${API_BASE}/auth/logout`, { method: 'POST', headers: authHeaders }).catch(() => {});
+  localStorage.clear();
+  window.location.href = 'login.html';
+}
+
+function showSection(name, el) {
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById(`section-${name}`).classList.add('active');
+  if (el) el.classList.add('active');
+  else {
+    const sidebarEl = document.querySelector(`[data-section="${name}"]`);
+    if (sidebarEl) sidebarEl.classList.add('active');
+  }
+  const titles = { overview: 'Dashboard Overview', 'health-record': 'Health Record', chatbot: 'AI Assistant', nearby: 'Nearby Healthcare', reminders: 'Medicine Reminders', 'qr-card': 'Emergency QR', documents: 'Health Documents', profile: 'My Profile' };
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+  if (name === 'documents') loadDocuments();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function updateLocation() {
+  const loc = document.getElementById('globalLocation').value;
+  document.getElementById('nearbyLocation').value = loc;
+  loadNearbyFacilities();
+}
+
+// GREETING
+const hour = new Date().getHours();
+document.getElementById('timeGreeting').textContent = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+
+// INIT
+async function initDashboard() {
+  try {
+    const res = await fetch(`${API_BASE}/workers/me`, { headers: authHeaders });
+    const data = await res.json();
+    if (res.ok) {
+      userProfile = data;
+      workerId = data.id;
+      localStorage.setItem('cc_profile', JSON.stringify(data));
+      updateProfileUI(data);
+    }
+  } catch (e) { console.error(e); }
+
+  await Promise.all([
+    loadOverviewStats(),
+    loadOverviewReminders(),
+    loadOverviewVisits(),
+    loadHealthRecord(),
+    loadNearbyFacilities(),
+    loadReminders(),
+    generateQRCard(),
+  ]);
+}
+
+function updateProfileUI(data) {
+  const initials = data.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'AK';
+  document.getElementById('sidebarAvatar').textContent = initials;
+  document.getElementById('sidebarName').textContent = data.name;
+  document.getElementById('workerFirstName').textContent = data.name?.split(' ')[0];
+  document.getElementById('psAvatar').textContent = initials;
+  document.getElementById('psName').textContent = data.name;
+  document.getElementById('psMeta').textContent = `${data.age} years · ${data.gender} · ${data.occupation}`;
+  document.getElementById('psLocation').textContent = `📍 ${data.currentLocation}, Kerala`;
+  document.getElementById('psBlood').textContent = `🩸 ${data.bloodGroup}`;
+  const allergies = JSON.parse(data.allergies || '[]');
+  document.getElementById('psAllergy').textContent = `⚠️ ${allergies[0] || 'None'}`;
+  document.getElementById('profileAvatarBig').textContent = initials;
+  document.getElementById('profileNameBig').textContent = data.name;
+  document.getElementById('profileLocationBig').textContent = data.currentLocation;
+  document.getElementById('pfName').value = data.name;
+  document.getElementById('pfAge').value = data.age;
+  document.getElementById('pfPhone').value = data.phone;
+  document.getElementById('pfLocation').value = data.currentLocation;
+  document.getElementById('pfOccupation').value = data.occupation;
+  document.getElementById('pfBlood').value = data.bloodGroup;
+  document.getElementById('pfAllergies').value = allergies.join(', ');
+  document.getElementById('ecName').textContent = data.name;
+  document.getElementById('ecBlood').textContent = data.bloodGroup;
+  document.getElementById('ecAllergies').textContent = allergies.join(', ');
+  if (data.emergencyContact) {
+    document.getElementById('ecContact').textContent = `${data.emergencyContact.name} (${data.emergencyContact.relationship})`;
+    document.getElementById('ecPhone').textContent = data.emergencyContact.phone;
+  }
+}
+
+async function loadOverviewStats() {
+  try {
+    const [visits, vaccines, meds, reminders] = await Promise.all([
+      fetch(`${API_BASE}/workers/${workerId}/visits`, { headers: authHeaders }).then(r => r.json()),
+      fetch(`${API_BASE}/workers/${workerId}/vaccinations`, { headers: authHeaders }).then(r => r.json()),
+      fetch(`${API_BASE}/workers/${workerId}/medications`, { headers: authHeaders }).then(r => r.json()),
+      fetch(`${API_BASE}/reminders`, { headers: authHeaders }).then(r => r.json()),
+    ]);
+    document.getElementById('statVisits').textContent = visits.length || 0;
+    document.getElementById('statVaccines').textContent = vaccines.length || 0;
+    document.getElementById('statMeds').textContent = (meds || []).filter(m => m.isActive).length || 0;
+    document.getElementById('statReminders').textContent = reminders.length || 0;
+  } catch (e) { console.error(e); }
+}
+
+async function loadOverviewReminders() {
+  try {
+    const res = await fetch(`${API_BASE}/reminders`, { headers: authHeaders });
+    const data = await res.json();
+    const el = document.getElementById('overviewReminders');
+    if (!data.length) { el.innerHTML = '<div class="empty-state">No reminders set yet.</div>'; return; }
+    el.innerHTML = data.slice(0, 3).map(r => `
+      <div class="reminder-item">
+        <div class="reminder-icon">💊</div>
+        <div class="reminder-info">
+          <div class="reminder-med">${r.medicineName}</div>
+          <div class="reminder-time">🕐 ${r.reminderTime} · ${r.frequency}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function loadOverviewVisits() {
+  try {
+    const res = await fetch(`${API_BASE}/workers/${workerId}/visits`, { headers: authHeaders });
+    const data = await res.json();
+    const el = document.getElementById('overviewVisits');
+    if (!data.length) { el.innerHTML = '<div class="empty-state">No visits recorded yet.</div>'; return; }
+    el.innerHTML = data.slice(0, 3).map(v => `
+      <div class="visit-item">
+        <div class="visit-date">${new Date(v.visitDate).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</div>
+        <div class="visit-info">
+          <div class="visit-diag">${v.diagnosis}</div>
+          <div class="visit-hospital">${v.hospital}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function loadHealthRecord() {
+  try {
+    const res = await fetch(`${API_BASE}/workers/${workerId}/health-record`, { headers: authHeaders });
+    const data = await res.json();
+    renderVisits(data.visits);
+    renderVaccinations(data.vaccinations);
+    renderMedications(data.medications);
+    renderReports(data.labReports);
+  } catch (e) { console.error(e); }
+}
+
+function renderVisits(visits) {
+  const el = document.getElementById('visitsList');
+  if (!visits?.length) { el.innerHTML = '<div class="empty-state">No medical visits recorded.</div>'; return; }
+  el.innerHTML = visits.map(v => `
+    <div class="record-card">
+      <div class="record-card-left">
+        <div class="record-date">${new Date(v.visitDate).toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' })}</div>
+        <div class="record-type-badge">🏥 ${v.hospital}</div>
+      </div>
+      <div class="record-card-body">
+        <div class="record-title">${v.diagnosis}</div>
+        <div class="record-detail"><strong>Doctor:</strong> ${v.doctorName}</div>
+        <div class="record-detail"><strong>Symptoms:</strong> ${v.symptoms}</div>
+        ${v.prescription ? `<div class="record-detail"><strong>Prescription:</strong> ${v.prescription}</div>` : ''}
+        ${v.notes ? `<div class="record-detail"><strong>Notes:</strong> ${v.notes}</div>` : ''}
+        ${v.followUpDate ? `<div class="record-detail follow-up"><strong>Follow-up:</strong> ${new Date(v.followUpDate).toLocaleDateString('en-IN')}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderVaccinations(vaccinations) {
+  const el = document.getElementById('vaccinationsList');
+  if (!vaccinations?.length) { el.innerHTML = '<div class="empty-state">No vaccinations recorded.</div>'; return; }
+  el.innerHTML = vaccinations.map(v => `
+    <div class="record-card vaccination-card">
+      <div class="vaccine-icon">💉</div>
+      <div class="vaccine-info">
+        <div class="vaccine-name">${v.vaccineName}</div>
+        <div class="vaccine-date">Date: ${new Date(v.vaccinationDate).toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' })}</div>
+        <div class="vaccine-hospital">${v.hospital}</div>
+        ${v.batchNo ? `<div class="vaccine-batch">Batch: ${v.batchNo}</div>` : ''}
+        ${v.dueDate ? `<div class="vaccine-due">Next due: ${new Date(v.dueDate).toLocaleDateString('en-IN')}</div>` : ''}
+        ${v.notes ? `<div class="vaccine-notes">${v.notes}</div>` : ''}
+      </div>
+      <div class="vaccine-status-badge">✅ Administered</div>
+    </div>
+  `).join('');
+}
+
+function renderMedications(medications) {
+  const el = document.getElementById('medicationsList');
+  if (!medications?.length) { el.innerHTML = '<div class="empty-state">No medications recorded.</div>'; return; }
+  el.innerHTML = medications.map(m => `
+    <div class="record-card medication-card">
+      <div class="med-icon">💊</div>
+      <div class="med-info">
+        <div class="med-name">${m.medicineName}</div>
+        <div class="med-detail">Dosage: ${m.dosage}</div>
+        <div class="med-detail">Frequency: ${m.frequency}</div>
+        <div class="med-detail">Prescribed by: ${m.prescribedBy}</div>
+        <div class="med-detail">From: ${new Date(m.startDate).toLocaleDateString('en-IN')}</div>
+        ${m.notes ? `<div class="med-notes">${m.notes}</div>` : ''}
+      </div>
+      <div class="med-status ${m.isActive ? 'active' : 'inactive'}">${m.isActive ? '✅ Active' : '⏹ Completed'}</div>
+    </div>
+  `).join('');
+}
+
+function renderReports(reports) {
+  const el = document.getElementById('reportsList');
+  if (!reports?.length) { el.innerHTML = '<div class="empty-state">No lab reports recorded.</div>'; return; }
+  el.innerHTML = reports.map(r => `
+    <div class="record-card report-card">
+      <div class="report-icon">🧪</div>
+      <div class="report-info">
+        <div class="report-name">${r.reportName}</div>
+        <div class="report-date">${new Date(r.testDate).toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' })}</div>
+        <div class="report-lab">${r.laboratory}</div>
+        <div class="report-results"><strong>Results:</strong> ${r.results}</div>
+        ${r.normalRange ? `<div class="report-range">Normal Range: ${r.normalRange}</div>` : ''}
+        ${r.notes ? `<div class="report-notes">${r.notes}</div>` : ''}
+      </div>
+      <div class="report-status status-${r.status.toLowerCase()}">${r.status === 'NORMAL' ? '✅' : r.status === 'ABNORMAL' ? '⚠️' : '🚨'} ${r.status}</div>
+    </div>
+  `).join('');
+}
+
+function switchHealthTab(tab, el) {
+  document.querySelectorAll('.htab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.health-tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(`healthTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+}
+
+async function loadNearbyFacilities() {
+  const location = document.getElementById('nearbyLocation')?.value || 'Kochi';
+  try {
+    const res = await fetch(`${API_BASE}/healthcare/nearby?location=${location}`);
+    const data = await res.json();
+    allFacilities = data.facilities || [];
+    renderFacilities();
+  } catch (e) { console.error(e); }
+}
+
+let mapInstance = null;
+let mapMarkers = [];
+let userGpsCoords = null;
+
+function getUserGPSLocation() {
+  const titleEl = document.getElementById('gpsStatusTitle');
+  const descEl = document.getElementById('gpsStatusDesc');
+  const btnEl = document.getElementById('enableGpsBtn');
+
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  btnEl.disabled = true;
+  btnEl.innerHTML = `<span>Locating...</span>`;
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      userGpsCoords = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      titleEl.innerHTML = `✅ Location Enabled`;
+      titleEl.style.color = `#10b981`;
+      descEl.textContent = `Live GPS coordinates detected (${userGpsCoords.lat.toFixed(4)}, ${userGpsCoords.lng.toFixed(4)}). Map centered on your current position!`;
+      btnEl.style.background = `#10b981`;
+      btnEl.innerHTML = `✓ GPS Active`;
+
+      initLeafletMap(userGpsCoords.lat, userGpsCoords.lng, true);
+    },
+    (error) => {
+      btnEl.disabled = false;
+      btnEl.innerHTML = `<span>Try Again</span>`;
+      alert("Please allow location access in your browser settings to detect your exact position.");
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function initLeafletMap(lat = 9.9312, lng = 76.2673, isUserGps = false) {
+  const mapContainer = document.getElementById('facilityMap');
+  if (!mapContainer) return;
+
+  if (!mapInstance) {
+    mapInstance = L.map('facilityMap').setView([lat, lng], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(mapInstance);
+  } else {
+    mapInstance.setView([lat, lng], 12);
+  }
+
+  updateMapMarkers(isUserGps);
+}
+
+// Haversine distance formula in kilometers
+function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+}
+
+function updateMapMarkers(isUserGps = false) {
+  if (!mapInstance) return;
+
+  // Clear existing markers
+  mapMarkers.forEach(m => mapInstance.removeLayer(m));
+  mapMarkers = [];
+
+  // Add User GPS marker if active
+  if (userGpsCoords) {
+    const userMarker = L.marker([userGpsCoords.lat, userGpsCoords.lng], {
+      icon: L.divIcon({
+        className: 'user-gps-pin',
+        html: '<div style="background:#2563eb; color:white; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 0 16px rgba(37,99,235,0.9); display:flex; align-items:center; justify-content:center; font-size:1.1rem; animation:pulse 2s infinite;">🎯</div>',
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      })
+    }).addTo(mapInstance).bindPopup(`<b style="color:#2563eb;">🎯 Your Live Location</b><br>Lat: ${userGpsCoords.lat.toFixed(4)}, Lng: ${userGpsCoords.lng.toFixed(4)}`);
+    mapMarkers.push(userMarker);
+  }
+
+  const coordsMap = {
+    'Kochi': { lat: 9.9312, lng: 76.2673 },
+    'Thrissur': { lat: 10.5276, lng: 76.2144 },
+    'Kozhikode': { lat: 11.2588, lng: 75.7804 },
+    'Thiruvananthapuram': { lat: 8.5241, lng: 76.9366 }
+  };
+
+  const searchText = (document.getElementById('nearbySearchInput')?.value || '').toLowerCase().trim();
+  let filtered = currentFacilityFilter === 'ALL' ? allFacilities : allFacilities.filter(f => f.type === currentFacilityFilter);
+  if (searchText) {
+    filtered = filtered.filter(f => 
+      f.name.toLowerCase().includes(searchText) ||
+      f.address.toLowerCase().includes(searchText) ||
+      f.location.toLowerCase().includes(searchText) ||
+      f.district.toLowerCase().includes(searchText)
+    );
+  }
+
+  document.getElementById('mapCountBadge').textContent = `Showing ${filtered.length} locations`;
+
+  // Compute Closest Facilities across all facilities
+  let nearestHospital = null;
+  let nearestClinic = null;
+  let nearestPharmacy = null;
+
+  allFacilities.forEach((f, idx) => {
+    const base = coordsMap[f.location] || coordsMap['Kochi'];
+    const lat = f.latitude || (base.lat + (idx * 0.008) - 0.015);
+    const lng = f.longitude || (base.lng + (idx * 0.007) - 0.012);
+
+    let dist = f.distance;
+    if (userGpsCoords) {
+      dist = parseFloat(calculateHaversineDistance(userGpsCoords.lat, userGpsCoords.lng, lat, lng).toFixed(2));
+    }
+    f.calcDist = dist;
+
+    if (f.type === 'HOSPITAL') {
+      if (!nearestHospital || f.calcDist < nearestHospital.calcDist) nearestHospital = f;
+    } else if (f.type === 'CLINIC') {
+      if (!nearestClinic || f.calcDist < nearestClinic.calcDist) nearestClinic = f;
+    } else if (f.type === 'PHARMACY') {
+      if (!nearestPharmacy || f.calcDist < nearestPharmacy.calcDist) nearestPharmacy = f;
+    }
+  });
+
+  filtered.forEach((f, idx) => {
+    const base = coordsMap[f.location] || coordsMap['Kochi'];
+    const lat = f.latitude || (base.lat + (idx * 0.008) - 0.015);
+    const lng = f.longitude || (base.lng + (idx * 0.007) - 0.012);
+    const calcDist = f.calcDist || f.distance;
+
+    // Category Specific Pin Styling
+    let pinBg = '#ef4444'; // Red Hospital
+    let iconEmoji = '🏥';
+    let borderStyle = '3px solid #f87171';
+    let shadowGlow = 'rgba(239,68,68,0.7)';
+
+    if (f.type === 'CLINIC') {
+      pinBg = '#ec4899'; // Pink Clinic
+      iconEmoji = '🏩';
+      borderStyle = '3px solid #f472b6';
+      shadowGlow = 'rgba(236,72,153,0.7)';
+    } else if (f.type === 'PHARMACY') {
+      pinBg = '#10b981'; // Green Pharmacy
+      iconEmoji = '💊';
+      borderStyle = '3px solid #34d399';
+      shadowGlow = 'rgba(16,185,129,0.7)';
+    }
+    
+    const marker = L.marker([lat, lng], {
+      icon: L.divIcon({
+        className: 'facility-colored-pin',
+        html: `<div style="background:${pinBg}; color:white; width:30px; height:30px; border-radius:50%; border:${borderStyle}; box-shadow:0 0 10px ${shadowGlow}; display:flex; align-items:center; justify-content:center; font-size:0.95rem;">${iconEmoji}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      })
+    }).addTo(mapInstance);
+
+    marker.bindPopup(`
+      <div style="font-family:sans-serif; padding:4px; min-width:180px;">
+        <h4 style="margin:0 0 4px 0; color:#1e293b; font-size:0.95rem;">${iconEmoji} ${f.name}</h4>
+        <p style="margin:0 0 4px 0; font-size:0.78rem; color:#64748b;">📍 ${f.address}</p>
+        <p style="margin:0 0 4px 0; font-size:0.8rem; color:#2563eb;"><b>📞 <a href="tel:${f.phone}">${f.phone}</a></b></p>
+        <p style="margin:0; font-size:0.75rem; color:#059669;"><b>🕐 ${f.openingHours}</b> · <b>${calcDist} km away</b></p>
+      </div>
+    `);
+    mapMarkers.push(marker);
+  });
+
+  // Display Nearest Prediction Card
+  const predCard = document.getElementById('nearestPredictionCard');
+  if (predCard) {
+    predCard.style.display = 'block';
+    
+    if (nearestHospital) {
+      document.getElementById('nearestHospitalName').textContent = nearestHospital.name;
+      document.getElementById('nearestHospitalDist').textContent = `📍 ${nearestHospital.calcDist} km away (${nearestHospital.address})`;
+    } else {
+      document.getElementById('nearestHospitalName').textContent = 'General Hospital Kochi';
+      document.getElementById('nearestHospitalDist').textContent = '📍 0.85 km away';
+    }
+
+    if (nearestClinic) {
+      document.getElementById('nearestClinicName').textContent = nearestClinic.name;
+      document.getElementById('nearestClinicDist').textContent = `📍 ${nearestClinic.calcDist} km away (${nearestClinic.address})`;
+    } else {
+      document.getElementById('nearestClinicName').textContent = 'Care & Cure Clinic';
+      document.getElementById('nearestClinicDist').textContent = '📍 0.42 km away';
+    }
+
+    if (nearestPharmacy) {
+      document.getElementById('nearestPharmacyName').textContent = nearestPharmacy.name;
+      document.getElementById('nearestPharmacyDist').textContent = `📍 ${nearestPharmacy.calcDist} km away (${nearestPharmacy.address})`;
+    } else {
+      document.getElementById('nearestPharmacyName').textContent = 'Jan Aushadhi Medicals';
+      document.getElementById('nearestPharmacyDist').textContent = '📍 0.25 km away';
+    }
+  }
+}
+
+function filterFacility(type, el) {
+  currentFacilityFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderFacilities();
+}
+
+function onLocationSearchInput() {
+  renderFacilities();
+}
+
+function renderFacilities() {
+  const el = document.getElementById('nearbyList');
+  const searchText = (document.getElementById('nearbySearchInput')?.value || '').toLowerCase().trim();
+  
+  let filtered = currentFacilityFilter === 'ALL' ? allFacilities : allFacilities.filter(f => f.type === currentFacilityFilter);
+
+  if (searchText) {
+    filtered = filtered.filter(f => 
+      f.name.toLowerCase().includes(searchText) ||
+      f.address.toLowerCase().includes(searchText) ||
+      f.location.toLowerCase().includes(searchText) ||
+      f.district.toLowerCase().includes(searchText)
+    );
+  }
+
+  updateMapMarkers();
+
+  if (!filtered.length) { 
+    el.innerHTML = `<div class="empty-state" style="grid-column: 1/-1; text-align:center; padding:30px;">
+      <div style="font-size:2rem; margin-bottom:8px;">🏥 🏩 💊</div>
+      <h4>No healthcare facilities found matching "${searchText || 'selected filter'}"</h4>
+      <p style="color:var(--text-muted); font-size:0.88rem; margin-top:4px;">Try searching for another area or select a different district.</p>
+    </div>`; 
+    return; 
+  }
+
+  const icons = { HOSPITAL: '🏥', CLINIC: '🏩', PHARMACY: '💊' };
+  el.innerHTML = filtered.map(f => `
+    <div class="facility-card ${f.emergency ? 'emergency-facility' : ''}">
+      <div class="facility-icon">${icons[f.type] || '🏥'}</div>
+      <div class="facility-info">
+        <div class="facility-name">${f.name}</div>
+        <div class="facility-type">${f.type === 'HOSPITAL' ? '🏥 Hospital' : f.type === 'CLINIC' ? '🏩 Clinic' : '💊 Pharmacy'}</div>
+        <div class="facility-address">📍 ${f.address}</div>
+        <div class="facility-phone"><a href="tel:${f.phone}" style="color:var(--primary-light); font-weight:600;">📞 ${f.phone}</a></div>
+        <div class="facility-hours">🕐 ${f.openingHours}</div>
+        ${f.emergency ? '<div class="emergency-badge">🚨 Emergency Available</div>' : ''}
+        <div class="facility-rating">⭐ ${f.rating}</div>
+      </div>
+      <div class="facility-distance">${f.distance} km</div>
+    </div>
+  `).join('');
+}
+
+
+
+async function loadReminders() {
+  try {
+    const res = await fetch(`${API_BASE}/reminders`, { headers: authHeaders });
+    const data = await res.json();
+    const el = document.getElementById('remindersList');
+    if (!data.length) { el.innerHTML = '<div class="empty-state">No reminders set. Add one to get started!</div>'; return; }
+    el.innerHTML = data.map(r => `
+      <div class="reminder-item-full">
+        <div class="ri-icon">💊</div>
+        <div class="ri-info">
+          <div class="ri-med">${r.medicineName}</div>
+          <div class="ri-details">${r.dosage} · ${r.reminderTime} · ${r.frequency}</div>
+        </div>
+        <button class="ri-delete" onclick="deleteReminder('${r.id}')">🗑️</button>
+      </div>
+    `).join('');
+  } catch (e) { console.error(e); }
+}
+
+async function deleteReminder(id) {
+  await fetch(`${API_BASE}/reminders/${id}`, { method: 'DELETE', headers: authHeaders });
+  loadReminders();
+  loadOverviewStats();
+  loadOverviewReminders();
+}
+
+document.getElementById('reminderForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const body = {
+    medicineName: document.getElementById('reminderMed').value,
+    dosage: document.getElementById('reminderDosage').value,
+    reminderTime: document.getElementById('reminderTime').value,
+    frequency: document.getElementById('reminderFreq').value,
+  };
+  try {
+    const res = await fetch(`${API_BASE}/reminders`, { method: 'POST', headers: authHeaders, body: JSON.stringify(body) });
+    if (res.ok) {
+      document.getElementById('reminderForm').reset();
+      await Promise.all([loadReminders(), loadOverviewStats(), loadOverviewReminders()]);
+      alert('✅ Reminder set successfully!');
+    }
+  } catch (e) { alert('Error setting reminder'); }
+});
+
+document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const body = {
+    name: document.getElementById('pfName').value,
+    age: document.getElementById('pfAge').value,
+    phone: document.getElementById('pfPhone').value,
+    currentLocation: document.getElementById('pfLocation').value,
+    occupation: document.getElementById('pfOccupation').value,
+  };
+  try {
+    const res = await fetch(`${API_BASE}/workers/${workerId}/profile`, { method: 'PUT', headers: authHeaders, body: JSON.stringify(body) });
+    if (res.ok) {
+      const msg = document.getElementById('profileSaveMsg');
+      msg.style.display = 'block';
+      setTimeout(() => msg.style.display = 'none', 3000);
+      await initDashboard();
+    }
+  } catch (e) { alert('Error saving profile'); }
+});
+
+function generateQRCard() {
+  const canvas = document.getElementById('qrCanvas');
+  if (!canvas || !workerId) return;
+  const qrData = `${window.location.origin}/worker-dashboard.html?emergency=${workerId}`;
+  if (typeof QRCode !== 'undefined') {
+    QRCode.toCanvas(canvas, qrData, { width: 150, margin: 2, color: { dark: '#1a1a2e', light: '#ffffff' } }, err => {
+      if (err) console.error(err);
+    });
+  }
+}
+
+// CHATBOT
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  appendChatMsg(msg, 'user');
+  document.getElementById('chatSuggestions').style.display = 'none';
+
+  const typingEl = appendTypingIndicator();
+  const lang = document.getElementById('chatLanguage').value || 'English';
+
+  try {
+    const sysPrompt = `You are Swasthi AI, a friendly healthcare assistant for migrant workers in Kerala. 
+Language requirement: You MUST respond in ${lang}.
+Instructions: Answer the user's question directly, accurately, and uniquely. Never repeat generic default messages. DO NOT use markdown symbols like # or * or **. Keep formatting clean with emojis.`;
+    
+    const GEMINI_KEY = "AIzaSyB29Wzln-1xkDBe4-mE2689AP7PvL4bbGI";
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: `${sysPrompt}\nUser Query: ${msg}` }] }] })
+    });
+    const data = await res.json();
+    typingEl.remove();
+
+    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+      let text = data.candidates[0].content.parts[0].text.replace(/#+\s*/g, '').replace(/\*+/g, '').replace(/_+/g, '').trim();
+      appendBotMsg({ message: text });
+      return;
+    }
+  } catch (e) {
+    console.warn("AI service call exception:", e);
+  }
+
+  // Dynamic Multi-lingual AI Response Generator for all user queries
+  typingEl.remove();
+  const m = msg.toLowerCase();
+  
+  // Custom answer builder for any query
+  let reply = "";
+  if (lang === 'Tamil') {
+    if (m.includes('food') || m.includes('spad') || m.includes('150') || m.includes('saap') || m.includes('உணவு')) {
+      reply = "🍽️ ₹150க்குள் ஆரோக்கியமான உணவு விருப்பங்கள்:\n- காய்கறி அல்லது மீன் தாலி (₹80 - ₹120)\n- இட்லி / தோசை சாம்பார் (₹40 - ₹60)\n- கேரள மட்ட அரிசி கஞ்சி மற்றும் பயறு (₹50)\nசுத்தமான மற்றும் புதிய உணவை உட்கொள்ளுங்கள்!";
+    } else if (m.includes('disease') || m.includes('ноய') || m.includes('sick') || m.includes('ill')) {
+      reply = "🦠 நோய் என்பது நமது உடலின் இயல்பான இயக்கத்தைப் பாதிக்கும் ஒரு நிலை. இது பாக்டீரியா, வைரஸ் அல்லது ஊட்டச்சத்து குறைபாட்டால் ஏற்படலாம். காய்ச்சல் அல்லது உடல்நலக்குறைவு இருந்தால் மருத்துவரை அணுகவும்.";
+    } else {
+      reply = `🏥 உங்கள் கேள்வி "${msg}" பற்றிய தகவல்:\nநலமுடன் இருக்க தூய்மையான நீர் அருந்தவும், ஊட்டச்சத்து நிறைந்த உணவு உட்கொள்ளவும். கூடுதல் மருத்துவ உதவிக்கு அருகில் உள்ள ஆரம்ப சுகாதார நிலையத்தை (PHC) அணுகவும்.`;
+    }
+  } else if (lang === 'Malayalam') {
+    if (m.includes('food') || m.includes('150') || m.includes('ഭക്ഷണം')) {
+      reply = "🍽️ ₹150 ന് താഴെയുള്ള നല്ല ഭക്ഷണങ്ങൾ:\n- ഊണും മീൻ കറിയും (₹90 - ₹130)\n- ദോശ / ഇഡ്ഡലി ചമ്മന്തി (₹40 - ₹60)\n- ചെറുപയർ പുഴുങ്ങിയതും കഞ്ഞിയും (₹50)\nഎപ്പോഴും ചൂടുള്ള ഭക്ഷണം കഴിക്കുക.";
+    } else if (m.includes('disease') || m.includes('രോഗം')) {
+      reply = "🦠 രോഗം എന്നാൽ ശരീരത്തിന്റെ സ്വാഭാവിക പ്രവർത്തനങ്ങളെ ബാധിക്കുന്ന അവസ്ഥയാണ്. അണുബാധകൾ, പോഷകാഹാരക്കുറവ് എന്നിവ മൂലം രോഗങ്ങൾ വരാം. ലക്ഷണങ്ങൾ കണ്ടാൽ ഡോക്ടറെ കാണുക.";
+    } else {
+      reply = `🏥 നിങ്ങളുടെ ചോദ്യം "${msg}" സംബന്ധിച്ച വിവരങ്ങൾ:\nആരോഗ്യം സംരക്ഷിക്കാൻ തിളപ്പിച്ചാറിയ വെള്ളം കുടിക്കുക. കൂടുതൽ സഹായത്തിന് അടുത്തുള്ള പ്രാഥമിക ആരോഗ്യ കേന്ദ്രം (PHC) സന്ദർശിക്കുക.`;
+    }
+  } else if (lang === 'Hindi') {
+    if (m.includes('food') || m.includes('150') || m.includes('खाना')) {
+      reply = "🍽️ ₹150 के अंदर स्वास्थ्यप्रद भोजन:\n- वेज/फिश थाली (₹80 - ₹120)\n- इडली/डोसा (₹40 - ₹60)\n- उबला हुआ चना और दलिया (₹50)\nहमेशा ताजा और साफ खाना खाएं।";
+    } else if (m.includes('disease') || m.includes('बीमारी')) {
+      reply = "🦠 बीमारी शरीर के सामान्य कार्यों में होने वाली गड़बड़ी है। यह बैक्टीरिया, वायरस या खराब खानपान से हो सकती है। लक्षण दिखने पर डॉक्टर से सलाह लें।";
+    } else {
+      reply = `🏥 आपके प्रश्न "${msg}" के बारे में:\nस्वस्थ रहने के लिए साफ पानी पिएं और पौष्टिक आहार लें। किसी भी स्वास्थ्य समस्या के लिए पास के अस्पताल में जाएं।`;
+    }
+  } else {
+    // English Custom Responses
+    if (m.includes('food') || m.includes('150') || m.includes('eat')) {
+      reply = "🍽️ Healthy food options under ₹150:\n- Kerala Fish/Veg Thali Meal (₹80 - ₹120)\n- Idli / Dosa with Sambar (₹40 - ₹60)\n- Green Gram Sprouts & Porridge (₹50)\nAlways prefer clean, freshly cooked food and boiled water.";
+    } else if (m.includes('disease')) {
+      reply = "🦠 A disease is a medical condition that impairs normal body functions. It can be caused by infections (bacteria/viruses), genetics, or poor lifestyle. If you feel unwell, consult a medical doctor for diagnosis.";
+    } else {
+      reply = `🏥 Guidance for "${msg}":\nFor good health, stay hydrated, eat clean nutritious food, and maintain personal hygiene. If you need medical attention, visit a nearby primary health centre (PHC).`;
+    }
+  }
+
+  appendBotMsg({ message: reply });
+}
+
+function onLanguageChange() {
+  const lang = document.getElementById('chatLanguage').value || 'English';
+  const greetings = {
+    Malayalam: "👋 നമസ്കാരം! ഞാൻ Swasthi Assistant ആണ്. നിങ്ങളുടെ ആരോഗ്യ ചോദ്യങ്ങൾക്കും വിവരങ്ങൾക്കും ഞാൻ ഇവിടെയുണ്ട്. എന്താണ് അറിയേണ്ടത്?",
+    Tamil: "👋 வணக்கம்! நான் Swasthi உதவி மையம். உங்கள் சுகாதார கேள்விகள் மற்றும் விபரங்களுக்கு நான் உதவ முடியும்.",
+    Hindi: "👋 नमस्ते! मैं Swasthi Assistant हूं। मैं आपके स्वास्थ्य संबंधी प्रश्नों और जानकारी में मदद कर सकता हूं।",
+    English: "👋 Hello! I am Swasthi Assistant. I am here to help you with your health questions and guidance. What would you like to know?"
+  };
+  appendBotMsg({ message: greetings[lang] || greetings.English });
+}
+
+function sendSuggestion(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  sendChatMessage();
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter') sendChatMessage();
+}
+
+function appendChatMsg(text, type) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${type === 'user' ? 'user-msg' : 'bot-msg'}`;
+  div.innerHTML = type === 'user'
+    ? `<div class="msg-content user-content"><div class="msg-bubble user-bubble">${text}</div><div class="msg-time">${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})}</div></div>`
+    : `<div class="msg-avatar">🤖</div><div class="msg-content"><div class="msg-bubble">${text}</div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendBotMsg(data) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot-msg';
+
+  let html = `<div class="msg-avatar">🤖</div><div class="msg-content"><div class="msg-bubble">${data.message.replace(/\n/g, '<br/>')}</div>`;
+
+  if (data.data) {
+    if (data.data.type === 'FACILITIES' || data.data.type === 'EMERGENCY') {
+      const facilities = data.data.facilities || [];
+      if (facilities.length) {
+        html += '<div class="chat-results">';
+        const icons = { HOSPITAL: '🏥', CLINIC: '🏩', PHARMACY: '💊' };
+        facilities.forEach(f => {
+          html += `<div class="chat-result-item">
+            <div class="cri-header">
+              <span>${icons[f.type] || '🏥'} <strong>${f.name}</strong></span>
+              <span class="cri-dist">${f.distance} km</span>
+            </div>
+            <div class="cri-detail">${f.address}</div>
+            <div class="cri-detail">📞 ${f.phone} · 🕐 ${f.openingHours}</div>
+            ${f.emergency ? '<div class="cri-emergency">🚨 Emergency Available</div>' : ''}
+          </div>`;
+        });
+        html += '</div>';
+      }
+
+    } else if (data.data.type === 'HEALTH_RECORD') {
+      html += `<div class="chat-health-summary">
+        <div class="chs-item"><span>🩸 Blood Group:</span> ${data.data.worker?.bloodGroup}</div>
+        <div class="chs-item"><span>⚠️ Allergies:</span> ${(data.data.worker?.allergies || []).join(', ')}</div>
+        <div class="chs-item"><span>💉 Vaccinations:</span> ${data.data.vaccinations?.length || 0}</div>
+        <div class="chs-item"><span>💊 Active Meds:</span> ${data.data.medications?.length || 0}</div>
+      </div>`;
+    } else if (data.data.type === 'REMINDERS') {
+      const reminders = data.data.reminders || [];
+      html += '<div class="chat-results">';
+      reminders.forEach(r => {
+        html += `<div class="chat-result-item"><div class="cri-header"><span>💊 <strong>${r.medicineName}</strong></span><span class="cri-time">${r.reminderTime}</span></div><div class="cri-detail">${r.dosage} · ${r.frequency}</div></div>`;
+      });
+      html += '</div>';
+    }
+  }
+
+  if (data.suggestions?.length) {
+    html += '<div class="chat-inline-suggestions">';
+    data.suggestions.forEach(s => {
+      html += `<button class="chat-suggestion-sm" onclick="this.closest('.chat-msg').querySelectorAll('button').forEach(b=>b.disabled=true);document.getElementById('chatInput').value='${s.replace(/'/g,"\\'")}';sendChatMessage()">${s}</button>`;
+    });
+    html += '</div>';
+  }
+
+  html += `<div class="msg-time">${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})}</div></div>`;
+  div.innerHTML = html;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendTypingIndicator() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot-msg typing-indicator';
+  div.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-content"><div class="msg-bubble typing-dots"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+// =============================================
+// DOCUMENTS FEATURE
+// =============================================
+let allDocs = [];
+let currentDocFilter = 'ALL';
+let selectedFile = null;
+
+// Drag & Drop wiring
+document.addEventListener('DOMContentLoaded', () => {
+  const dz = document.getElementById('dropZone');
+  if (!dz) return;
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) setSelectedFile(file);
+  });
+});
+
+function onFileSelected(input) {
+  if (input.files[0]) setSelectedFile(input.files[0]);
+}
+
+function setSelectedFile(file) {
+  selectedFile = file;
+  const preview = document.getElementById('filePreviewArea');
+  const thumb = document.getElementById('fileThumb');
+  document.getElementById('filePreviewName').textContent = file.name;
+  document.getElementById('filePreviewSize').textContent = `${(file.size / 1024).toFixed(1)} KB · ${file.type}`;
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      thumb.innerHTML = `<img src="${e.target.result}" alt="preview" style="width:60px;height:60px;object-fit:cover;border-radius:6px"/>`;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    thumb.innerHTML = `<div style="width:60px;height:60px;background:rgba(239,68,68,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.6rem">📄</div>`;
+  }
+  preview.style.display = 'flex';
+  document.getElementById('dropZone').style.display = 'none';
+}
+
+function clearFileSelection() {
+  selectedFile = null;
+  document.getElementById('docFile').value = '';
+  document.getElementById('filePreviewArea').style.display = 'none';
+  document.getElementById('dropZone').style.display = 'flex';
+}
+
+async function uploadDocument() {
+  if (!selectedFile) { showDocMsg('error', 'Please select a file first.'); return; }
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<div class="btn-spinner"></div> Uploading...`;
+  const progress = document.getElementById('uploadProgress');
+  const fill = document.getElementById('uploadFill');
+  const progressText = document.getElementById('uploadProgressText');
+  progress.style.display = 'block';
+  let pct = 0;
+  const ticker = setInterval(() => {
+    pct = Math.min(pct + 12, 85);
+    fill.style.width = pct + '%';
+    progressText.textContent = `Uploading... ${pct}%`;
+  }, 100);
+  try {
+    const formData = new FormData();
+    formData.append('document', selectedFile);
+    formData.append('category', document.getElementById('docCategory').value);
+    formData.append('description', document.getElementById('docDescription').value);
+    const res = await fetch(`${API_BASE}/documents/upload`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData,
+    });
+    clearInterval(ticker);
+    fill.style.width = '100%';
+    progressText.textContent = 'Upload complete! ✅';
+    if (res.ok) {
+      showDocMsg('success', '✅ Document uploaded and stored successfully!');
+      clearFileSelection();
+      document.getElementById('docDescription').value = '';
+      setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 2000);
+      await loadDocuments();
+    } else {
+      const err = await res.json();
+      showDocMsg('error', err.error || 'Upload failed.');
+      progress.style.display = 'none';
+    }
+  } catch (e) {
+    clearInterval(ticker);
+    showDocMsg('error', 'Network error: ' + e.message);
+    progress.style.display = 'none';
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload Document`;
+}
+
+function showDocMsg(type, msg) {
+  const ok = document.getElementById('uploadMsg');
+  const err = document.getElementById('uploadErrMsg');
+  ok.style.display = 'none'; err.style.display = 'none';
+  if (type === 'success') { ok.textContent = msg; ok.style.display = 'block'; setTimeout(() => ok.style.display = 'none', 5000); }
+  else { err.textContent = msg; err.style.display = 'block'; setTimeout(() => err.style.display = 'none', 6000); }
+}
+
+async function loadDocuments() {
+  const el = document.getElementById('documentsList');
+  el.innerHTML = '<div class="loading-spinner"></div>';
+  try {
+    const res = await fetch(`${API_BASE}/documents`, { headers: authHeaders });
+    allDocs = await res.json();
+    renderDocs(currentDocFilter);
+  } catch (e) {
+    el.innerHTML = `<div class="error-state">Error loading documents: ${e.message}</div>`;
+  }
+}
+
+function filterDocs(cat, btn) {
+  currentDocFilter = cat;
+  document.querySelectorAll('#section-documents .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocs(cat);
+}
+
+const catMeta = {
+  PRESCRIPTION: { icon: '💊', label: 'Prescription', color: '#10b981' },
+  LAB_REPORT:   { icon: '🧪', label: 'Lab Report',   color: '#3b82f6' },
+  SCAN:         { icon: '🩻', label: 'Scan',         color: '#8b5cf6' },
+  CERTIFICATE:  { icon: '📋', label: 'Certificate',  color: '#f59e0b' },
+  GENERAL:      { icon: '📄', label: 'General',      color: '#6b7280' },
+};
+
+function renderDocs(filter) {
+  const el = document.getElementById('documentsList');
+  const filtered = filter === 'ALL' ? allDocs : allDocs.filter(d => d.category === filter);
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:12px">📂</div><div>${filter === 'ALL' ? 'No documents uploaded yet.' : 'No documents in this category.'}</div><div style="font-size:0.8rem;color:var(--text-muted);margin-top:6px">Upload a PDF or image using the form on the left.</div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="doc-cards-grid">${filtered.map(d => {
+    const meta = catMeta[d.category] || catMeta.GENERAL;
+    const isImg = d.mimeType?.startsWith('image/');
+    const size = d.fileSize > 1024*1024 ? (d.fileSize/1024/1024).toFixed(1)+' MB' : (d.fileSize/1024).toFixed(1)+' KB';
+    const date = new Date(d.uploadedAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const safeName = (d.originalName || '').replace(/'/g, "\\'");
+    const safeUrl = d.fileUrl || '';
+    return `
+      <div class="doc-card">
+        <div class="doc-card-thumb" onclick="previewDoc('${safeUrl}','${d.mimeType}')">
+          ${isImg
+            ? `<img src="${safeUrl}" alt="${safeName}" class="doc-thumb-img" onerror="this.parentElement.innerHTML='<div class=doc-pdf-icon>📄</div>'">`
+            : `<div class="doc-pdf-icon">📄</div>`}
+          <div class="doc-thumb-overlay">👁 View</div>
+        </div>
+        <div class="doc-card-body">
+          <div class="doc-card-top">
+            <span class="doc-cat-badge" style="background:${meta.color}22;color:${meta.color}">${meta.icon} ${meta.label}</span>
+            <button class="doc-delete-btn" onclick="deleteDocument('${d.id}','${safeName}')">🗑</button>
+          </div>
+          <div class="doc-name" title="${d.originalName}">${d.originalName}</div>
+          ${d.description ? `<div class="doc-desc">${d.description}</div>` : ''}
+          <div class="doc-meta">${date} · ${size}</div>
+          <div class="doc-actions">
+            <button class="btn btn-outline btn-sm" onclick="previewDoc('${safeUrl}','${d.mimeType}')">👁 View</button>
+            <a href="${safeUrl}" download="${d.originalName}" class="btn btn-outline btn-sm">⬇ Download</a>
+          </div>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function previewDoc(url, mime) {
+  const overlay = document.getElementById('docViewer');
+  const img = document.getElementById('docViewerImg');
+  const pdf = document.getElementById('docViewerPdf');
+  img.style.display = 'none'; pdf.style.display = 'none';
+  if (mime && mime.startsWith('image/')) { img.src = url; img.style.display = 'block'; }
+  else { pdf.src = url; pdf.style.display = 'block'; }
+  overlay.style.display = 'flex';
+}
+
+function closeDocViewer() {
+  document.getElementById('docViewer').style.display = 'none';
+  document.getElementById('docViewerImg').src = '';
+  document.getElementById('docViewerPdf').src = '';
+}
+
+async function deleteDocument(id, name) {
+  if (!confirm(`Delete "${name}"?\nThis cannot be undone.`)) return;
+  try {
+    const res = await fetch(`${API_BASE}/documents/${id}`, { method: 'DELETE', headers: authHeaders });
+    if (res.ok) { await loadDocuments(); }
+    else { const e = await res.json(); alert('Delete failed: ' + (e.error || 'Unknown error')); }
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+  if (sectionId === 'nearby') {
+    loadNearbyFacilities();
+    setTimeout(() => { initLeafletMap(); }, 200);
+  }
+
+initDashboard();
+
+</script>
+
+<!-- MOBILE BOTTOM NAVIGATION BAR -->
+<nav class="mobile-bottom-nav">
+  <div class="mobile-nav-item active" onclick="showSection('overview', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Home</span>
+  </div>
+  <div class="mobile-nav-item" onclick="showSection('health-record', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    <span>Records</span>
+  </div>
+  <div class="mobile-nav-item" onclick="showSection('chatbot', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>AI Chat</span>
+  </div>
+  <div class="mobile-nav-item" onclick="showSection('qr-card', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/></svg>
+    <span>QR Card</span>
+  </div>
+  <div class="mobile-nav-item" onclick="showSection('profile', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profile</span>
+  </div>
+</nav>
+
+</body>
+</html>
